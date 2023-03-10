@@ -15,6 +15,7 @@ const globalErrorHandler = require("./controllers/errorController");
 const app = express();
 
 // App Routers
+const routes = require("./routes");
 
 // Global middlewares
 app.use(cors());
@@ -61,6 +62,8 @@ app.use(hpp());
 app.use(compression());
 
 // Mounting routers
+app.use("/api/v1/auth", routes.Auth);
+// app.use("/api/v1/users", routes.User);
 
 app.get("/", (req, res) => {
   res.status(404).json({
