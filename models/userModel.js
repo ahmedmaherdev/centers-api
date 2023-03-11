@@ -12,6 +12,7 @@ module.exports = (db) => {
         allowNull: false,
         validate: {
           len: [6, 100],
+          // msg: "name must be more than 6 characters and less than 100 characters.",
         },
       },
 
@@ -84,6 +85,34 @@ module.exports = (db) => {
             user.password = await bcrypt.hash(user.password, 12);
           }
         },
+
+        afterSave: function (user, options) {
+          user.password = undefined;
+        },
+      },
+
+      indexes: [
+        {
+          type: "FULLTEXT",
+          name: "name_fulltext",
+          fields: ["name"],
+        },
+      ],
+
+      defaultScope: {
+        where: {
+          isActive: true,
+        },
+        attributes: {
+          exclude: [
+            "password",
+            "isSuspended",
+            "isActive",
+            "passwordChangedAt",
+            "passwordResetToken",
+            "passwordResetExpires",
+          ],
+        },
       },
     }
   );
@@ -112,6 +141,8 @@ module.exports = (db) => {
     this.passwordResetExpires = Date.now() + expiredTime;
     return resetToken;
   };
+
+  User.searchedAttributes = ["name"];
 
   return User;
 };
