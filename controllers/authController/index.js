@@ -39,8 +39,10 @@ exports.login = catchAsync(async (req, res, next) => {
     where: {
       phone,
     },
+    attributes: {
+      include: ["password"],
+    },
   });
-
   if (!user || !(await user.correctPassword(user.password, password)))
     return next(
       new AppError(
