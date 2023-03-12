@@ -8,5 +8,7 @@ const db = new Sequelize(config.database, config.user, config.password, {
 });
 
 db.Users = require("./userModel")(db);
+db.Students = require("./studentModel")(db);
+db.SchoolYears = require("./schoolYearModel")(db);
 
 module.exports = db;

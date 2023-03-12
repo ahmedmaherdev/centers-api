@@ -4,6 +4,7 @@ const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 
 module.exports = (db) => {
+  const Student = require("./studentModel")(db);
   const User = db.define(
     "User",
     {
@@ -84,6 +85,10 @@ module.exports = (db) => {
           if (user.password) {
             user.password = await bcrypt.hash(user.password, 12);
           }
+
+          if (user.phone.startsWith("2")) {
+            user.phone = user.phone.slice(1);
+          }
         },
 
         afterSave: function (user, options) {
@@ -105,6 +110,7 @@ module.exports = (db) => {
         },
         attributes: {
           exclude: [
+            "StudentId",
             "password",
             "isSuspended",
             "isActive",
@@ -113,6 +119,8 @@ module.exports = (db) => {
             "passwordResetExpires",
           ],
         },
+
+        include: [Student],
       },
     }
   );
@@ -143,6 +151,10 @@ module.exports = (db) => {
   };
 
   User.searchedAttributes = ["name"];
+
+  Student.hasOne(User);
+
+  User.belongsTo(Student);
 
   return User;
 };

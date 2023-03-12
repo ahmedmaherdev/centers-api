@@ -7,20 +7,32 @@ const Email = require("../../utils/email");
 const crypto = require("crypto");
 const db = require("../../models");
 const { Op } = require("sequelize");
+const stringToNumber = require("../../utils/stringToNumber");
+
+exports.loginAsParent = catchAsync(async (req, res, next) => {
+  const { fatherPhone, code } = req.body;
+});
 
 exports.signup = catchAsync(async (req, res, next) => {
-  const { name, email, phone, password, passwordConfirm } = req.body;
+  const { name, email, phone, password, passwordConfirm, Student } = req.body;
 
   if (password !== passwordConfirm)
     return next(new AppError("Two passwords are not the same."));
 
-  const user = await db.Users.create({
-    name,
-    email,
-    phone,
-    password,
-    passwordConfirm,
-  });
+  const user = await db.Users.create(
+    {
+      name,
+      email,
+      phone,
+      password,
+      passwordConfirm,
+      Student,
+    },
+    {
+      include: "Student",
+    }
+  );
+
   Token.sendUser(res, StatusCodes.CREATED, user);
 });
 

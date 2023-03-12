@@ -1,6 +1,6 @@
 const catchAsync = require("../../utils/catchAsync");
 const AppError = require("../../utils/appError");
-const { Stat, StatusCodesusCodes } = require("http-status-codes");
+const { StatusCodes } = require("http-status-codes");
 const jwt = require("jsonwebtoken");
 const { promisify } = require("util");
 const db = require("../../models");

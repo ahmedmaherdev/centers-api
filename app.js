@@ -64,6 +64,7 @@ app.use(compression());
 // Mounting routers
 app.use("/api/v1/auth", routes.Auth);
 app.use("/api/v1/users", routes.User);
+app.use("/api/v1/schoolYears", routes.SchoolYear);
 
 app.get("/", (req, res) => {
   res.status(404).json({
