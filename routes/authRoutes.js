@@ -6,6 +6,7 @@ const protect = require("../controllers/authController/protect");
 router.post("/signup", auth.signup);
 
 router.post("/login", auth.login);
+router.post("/loginParent", auth.loginAsParent);
 router.get("/logout", auth.logout);
 
 router.patch("/forgetPassword", auth.forgetPassword);

@@ -8,7 +8,7 @@ module.exports = (db) => {
     {
       classroom: DataTypes.ENUM("first", "second"),
       gender: DataTypes.ENUM("male", "female"),
-      fatherPhone: {
+      parentPhone: {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
@@ -28,7 +28,7 @@ module.exports = (db) => {
       defaultScope: {
         include: [{ model: SchoolYear, as: "schoolYear" }],
         attributes: {
-          exclude: ["schoolYearId"],
+          exclude: ["schoolYearId", "code"],
         },
       },
     }

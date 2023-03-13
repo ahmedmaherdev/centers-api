@@ -10,7 +10,33 @@ const { Op } = require("sequelize");
 const stringToNumber = require("../../utils/stringToNumber");
 
 exports.loginAsParent = catchAsync(async (req, res, next) => {
-  const { fatherPhone, code } = req.body;
+  const { parentPhone, code } = req.body;
+
+  if (!parentPhone || !code)
+    return next(
+      new AppError(
+        "Please, provide the parent phone number or code.",
+        StatusCodes.BAD_REQUEST
+      )
+    );
+  const student = await db.Students.findOne({
+    where: {
+      code,
+      parentPhone,
+    },
+  });
+
+  if (!student)
+    return next(
+      new AppError(
+        "Incorrect parent phone number or code.",
+        StatusCodes.BAD_REQUEST
+      )
+    );
+
+  const user = await db.Users.findOne({ where: { studentId: student.id } });
+
+  Token.sendUser(res, StatusCodes.CREATED, user);
 });
 
 exports.signup = catchAsync(async (req, res, next) => {
@@ -31,6 +57,11 @@ exports.signup = catchAsync(async (req, res, next) => {
     {
       include: "student",
     }
+  );
+
+  await db.Students.update(
+    { code: stringToNumber(user.email) },
+    { where: { id: user.studentId } }
   );
 
   Token.sendUser(res, StatusCodes.CREATED, user);

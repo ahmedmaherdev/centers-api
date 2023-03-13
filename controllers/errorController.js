@@ -6,6 +6,11 @@ const handleLenError = (err) => {
   return new AppError(message, StatusCodes.BAD_REQUEST);
 };
 
+const handleNotFoundForeignkeyError = (err) => {
+  const message = `${err.fields.join(" , ")} not found.`;
+  return new AppError(message, StatusCodes.NOT_FOUND);
+};
+
 const handleDuplicateFieldsDB = (err) => {
   const message = `Duplicate field value: ${JSON.stringify(
     err.fields
@@ -80,6 +85,8 @@ module.exports = (err, req, res, next) => {
       error = handleValidationErrorDB(error);
     if (error.name === "JsonWebTokenError") error = handleJWTError();
     if (error.name === "TokenExpiredError") error = handleJWTExpiredError();
+    if (error.name === "SequelizeForeignKeyConstraintError")
+      error = handleNotFoundForeignkeyError(error);
     sendErrorProd(error, req, res);
   }
 };
