@@ -1,7 +1,7 @@
 const app = require("./app");
 const dotenv = require("dotenv");
 const { cloudinaryConfig } = require("./utils/cloudinary");
-
+const db = require("./models");
 dotenv.config();
 
 process.on("uncaughtException", (err) => {
@@ -11,7 +11,9 @@ process.on("uncaughtException", (err) => {
 });
 
 // db
-
+db.sync({})
+  .then(() => console.log("Database is connected successfully."))
+  .catch((err) => console.error(err));
 cloudinaryConfig();
 
 const PORT = process.env.PORT ?? 3000;

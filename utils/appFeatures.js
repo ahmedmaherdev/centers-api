@@ -1,59 +1,57 @@
 class APIFeatures {
-    constructor(query, queryString) {
-        // this.query = query
-        // this.queryString = queryString
+  constructor(queryString) {
+    this.query = {};
+    this.queryString = queryString;
+  }
+
+  filter() {
+    // 1A) Filtering
+    const queryObj = { ...this.queryString };
+    const excludedFields = ["page", "sort", "limit", "fields"];
+    excludedFields.forEach((el) => delete queryObj[el]);
+
+    this.query = {
+      where: {
+        ...queryObj,
+      },
+    };
+
+    return this;
+  }
+
+  sort() {
+    if (this.queryString.sort) {
+      let sortFields = this.queryString.sort.split(",");
+      sortFields = sortFields.map((f) =>
+        f.startsWith("-") ? [f.slice(1), "DESC"] : [f, "ASC"]
+      );
+      this.query.order = sortFields;
+    } else {
+      this.query.order = [["createdAt", "DESC"]];
     }
 
-    filter() {
-        // 1A) Filtering
-        // const queryObj = { ...this.queryString }
-        // const excludedFields = ['page', 'sort', 'limit', 'fields']
-        // excludedFields.forEach((el) => delete queryObj[el])
+    return this;
+  }
 
-        // // 1B) Advanced filtering
-        // let queryStr = JSON.stringify(queryObj)
-        // queryStr = queryStr.replace(
-        //     /\b(gte|gt|lte|lt|ne)\b/g,
-        //     (match) => `$${match}`
-        // )
-
-        // this.query = this.query.find(JSON.parse(queryStr))
-        // return this
+  limitFields() {
+    if (this.queryString.fields) {
+      const fields = this.queryString.fields.split(",");
+      this.query.attributes = fields;
     }
+    return this;
+  }
 
-    sort() {
-        // if (this.queryString.sort) {
-        //     const sortBy = this.queryString.sort.split(',').join(' ')
-        //     this.query = this.query.sort(`${sortBy} _id`)
-        // } else {
-        //     this.query = this.query.sort('-createdAt name _id')
-        // }
-        // return this
+  paginate() {
+    const page = this.queryString.page * 1 || 1;
+    const limit = this.queryString.limit * 1 || 10;
+    const offset = (page - 1) * limit;
+    if (limit > 10 || limit < 1) {
+      limit = 10;
     }
-
-    limitFields() {
-        // if (this.queryString.fields) {
-        //     const fields = this.queryString.fields.split(',').join(' ')
-        //     this.query = this.query.select(fields)
-        // } else {
-        //     this.query = this.query.select('-__v')
-        // }
-        // return this
-    }
-
-    paginate() {
-        // const page = this.queryString.page * 1 || 1
-        // const limit = this.queryString.limit * 1 || 10
-        // const skip = (page - 1) * limit
-
-        // if (limit > 10 || limit < 1) {
-        //     limit = 10
-        // }
-
-        // this.query = this.query.skip(skip).limit(limit)
-
-        // return this
-    }
+    this.query.offset = offset;
+    this.query.limit = limit;
+    return this;
+  }
 }
 
-module.exports = APIFeatures
+module.exports = APIFeatures;
