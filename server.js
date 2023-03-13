@@ -11,7 +11,7 @@ process.on("uncaughtException", (err) => {
 });
 
 // db
-db.sync()
+db.sync({})
   .then(() => console.log("Database is connected successfully."))
   .catch((err) => console.error(err));
 cloudinaryConfig();

@@ -14,7 +14,7 @@ exports.loginAsParent = catchAsync(async (req, res, next) => {
 });
 
 exports.signup = catchAsync(async (req, res, next) => {
-  const { name, email, phone, password, passwordConfirm, Student } = req.body;
+  const { name, email, phone, password, passwordConfirm, student } = req.body;
 
   if (password !== passwordConfirm)
     return next(new AppError("Two passwords are not the same."));
@@ -26,10 +26,10 @@ exports.signup = catchAsync(async (req, res, next) => {
       phone,
       password,
       passwordConfirm,
-      Student,
+      student,
     },
     {
-      include: "Student",
+      include: "student",
     }
   );
 

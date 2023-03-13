@@ -110,7 +110,7 @@ module.exports = (db) => {
         },
         attributes: {
           exclude: [
-            "StudentId",
+            "studentId",
             "password",
             "isSuspended",
             "isActive",
@@ -120,7 +120,7 @@ module.exports = (db) => {
           ],
         },
 
-        include: [Student],
+        include: [{ model: Student, as: "student" }],
       },
     }
   );
@@ -152,9 +152,15 @@ module.exports = (db) => {
 
   User.searchedAttributes = ["name"];
 
-  Student.hasOne(User);
+  Student.hasOne(User, {
+    as: "student",
+    foreignKey: "studentId",
+  });
 
-  User.belongsTo(Student);
+  User.belongsTo(Student, {
+    as: "student",
+    foreignKey: "studentId",
+  });
 
   return User;
 };

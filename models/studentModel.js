@@ -26,16 +26,22 @@ module.exports = (db) => {
     },
     {
       defaultScope: {
-        include: [SchoolYear],
+        include: [{ model: SchoolYear, as: "schoolYear" }],
         attributes: {
-          exclude: ["SchoolYearId"],
+          exclude: ["schoolYearId"],
         },
       },
     }
   );
 
-  SchoolYear.hasOne(Student);
-  Student.belongsTo(SchoolYear);
+  SchoolYear.hasOne(Student, {
+    as: "schoolYear",
+    foreignkey: "schoolYearId",
+  });
+  Student.belongsTo(SchoolYear, {
+    as: "schoolYear",
+    foreignkey: "schoolYearId",
+  });
 
   return Student;
 };

@@ -4,10 +4,10 @@ const SchoolYears = require("../controllers/schoolYearController");
 const restrictTo = require("../utils/restrictTo");
 const protect = require("../controllers/authController/protect");
 
-router.use(protect);
 router.get("/", SchoolYears.getAllSchoolYears);
 router.get("/:id", SchoolYears.getSchoolYear);
 
+router.use(protect);
 router.use(restrictTo("admin"));
 router.post("/", SchoolYears.createSchoolYear);
 router
