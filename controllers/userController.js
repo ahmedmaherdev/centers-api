@@ -3,6 +3,7 @@ const factoryHandler = require("./factoryHandler");
 const cloudinary = require("../utils/cloudinary");
 const AppError = require("../utils/appError");
 const { StatusCodes } = require("http-status-codes");
+const { userValidator } = require("../validators/userValidator");
 
 exports.getAllUsers = factoryHandler.getAll(db.Users);
 
@@ -10,6 +11,12 @@ exports.getUser = factoryHandler.getOne(db.Users);
 
 exports.createUserMiddleware = (req, res, next) => {
   const { name, email, phone, role, password } = req.body;
+  const result = userValidator.validate(req.body);
+  if (result.error)
+    return next(
+      new AppError(result.error.details[0].message),
+      StatusCodes.BAD_REQUEST
+    );
   req.body = { name, email, phone, role, password };
   next();
 };

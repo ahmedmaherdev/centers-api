@@ -8,6 +8,10 @@ const crypto = require("crypto");
 const db = require("../../models");
 const { Op } = require("sequelize");
 const stringToNumber = require("../../utils/stringToNumber");
+const {
+  userValidator,
+  studentValidator,
+} = require("../../validators/userValidator");
 
 exports.loginAsParent = catchAsync(async (req, res, next) => {
   const { parentPhone, code } = req.body;
@@ -40,10 +44,24 @@ exports.loginAsParent = catchAsync(async (req, res, next) => {
 });
 
 exports.signup = catchAsync(async (req, res, next) => {
-  const { name, email, phone, password, passwordConfirm, student } = req.body;
+  const {
+    name,
+    email,
+    phone,
+    password,
+    passwordConfirm,
+    parentPhone,
+    gender,
+    schoolYearId,
+  } = req.body;
 
-  if (password !== passwordConfirm)
-    return next(new AppError("Two passwords are not the same."));
+  const result = studentValidator.validate(req.body);
+
+  if (result.error) {
+    return next(
+      new AppError(result.error.details[0].message, StatusCodes.BAD_REQUEST)
+    );
+  }
 
   const user = await db.Users.create(
     {
@@ -52,7 +70,11 @@ exports.signup = catchAsync(async (req, res, next) => {
       phone,
       password,
       passwordConfirm,
-      student,
+      student: {
+        parentPhone,
+        gender,
+        schoolYearId,
+      },
     },
     {
       include: "student",

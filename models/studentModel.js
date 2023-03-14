@@ -6,7 +6,6 @@ module.exports = (db) => {
   const Student = db.define(
     "Student",
     {
-      classroom: DataTypes.ENUM("first", "second"),
       gender: DataTypes.ENUM("male", "female"),
       parentPhone: {
         type: DataTypes.STRING,
