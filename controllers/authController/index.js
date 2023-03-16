@@ -8,21 +8,18 @@ const crypto = require("crypto");
 const db = require("../../models");
 const { Op } = require("sequelize");
 const stringToNumber = require("../../utils/stringToNumber");
-const {
-  userValidator,
-  studentValidator,
-} = require("../../validators/userValidator");
+const authValidator = require("../../validators/authValidator");
 
 exports.loginAsParent = catchAsync(async (req, res, next) => {
   const { parentPhone, code } = req.body;
 
-  if (!parentPhone || !code)
+  const result = authValidator.loginAsParent.validate(req.body);
+  if (result.error) {
     return next(
-      new AppError(
-        "Please, provide the parent phone number or code.",
-        StatusCodes.BAD_REQUEST
-      )
+      new AppError(result.error.details[0].message, StatusCodes.BAD_REQUEST)
     );
+  }
+
   const student = await db.Students.findOne({
     where: {
       code,
@@ -44,18 +41,10 @@ exports.loginAsParent = catchAsync(async (req, res, next) => {
 });
 
 exports.signup = catchAsync(async (req, res, next) => {
-  const {
-    name,
-    email,
-    phone,
-    password,
-    passwordConfirm,
-    parentPhone,
-    gender,
-    schoolYearId,
-  } = req.body;
+  const { name, email, phone, password, parentPhone, gender, schoolYearId } =
+    req.body;
 
-  const result = studentValidator.validate(req.body);
+  const result = authValidator.signup.validate(req.body);
 
   if (result.error) {
     return next(
@@ -69,7 +58,6 @@ exports.signup = catchAsync(async (req, res, next) => {
       email,
       phone,
       password,
-      passwordConfirm,
       student: {
         parentPhone,
         gender,
@@ -90,19 +78,18 @@ exports.signup = catchAsync(async (req, res, next) => {
 });
 
 exports.login = catchAsync(async (req, res, next) => {
-  const { password, phone } = req.body;
+  const { password, email } = req.body;
 
-  if (!phone || !password)
+  const result = authValidator.login.validate(req.body);
+  if (result.error) {
     return next(
-      new AppError(
-        "Please, provide phone number or password",
-        StatusCodes.BAD_REQUEST
-      )
+      new AppError(result.error.details[0].message, StatusCodes.BAD_REQUEST)
     );
+  }
 
   const user = await db.Users.findOne({
     where: {
-      phone,
+      email,
     },
     attributes: {
       include: ["password"],
@@ -110,10 +97,7 @@ exports.login = catchAsync(async (req, res, next) => {
   });
   if (!user || !(await user.correctPassword(user.password, password)))
     return next(
-      new AppError(
-        "Incorrect phone number or password.",
-        StatusCodes.BAD_REQUEST
-      )
+      new AppError("Incorrect email or password.", StatusCodes.BAD_REQUEST)
     );
 
   Token.sendUser(res, StatusCodes.OK, user);
@@ -127,6 +111,13 @@ exports.logout = catchAsync((req, res, next) => {
 
 exports.forgetPassword = catchAsync(async (req, res, next) => {
   const { email } = req.body;
+  const result = authValidator.forgetPassword.validate(req.body);
+  if (result.error) {
+    return next(
+      new AppError(result.error.details[0].message, StatusCodes.BAD_REQUEST)
+    );
+  }
+
   const user = await db.Users.findOne({ where: { email } });
   if (!user)
     return next(
@@ -139,6 +130,7 @@ exports.forgetPassword = catchAsync(async (req, res, next) => {
 
   try {
     const URL = `http://${req.hostname}/reset-password?token=${resetToken}`;
+    console.log(URL);
     await new Email(user, URL).sendPasswordReset();
 
     Sender.send(res, StatusCodes.OK, undefined, {
@@ -161,7 +153,7 @@ exports.forgetPassword = catchAsync(async (req, res, next) => {
 
 exports.resetPassword = catchAsync(async (req, res, next) => {
   const { token } = req.params;
-  const { password, passwordConfirm } = req.body;
+  const { password } = req.body;
   const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
 
   const user = await db.Users.findOne({
@@ -176,14 +168,15 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
       new AppError("Token is invalid or has expired", StatusCodes.BAD_REQUEST)
     );
 
+  const result = authValidator.resetPassword.validate(req.body);
+  if (result.error) {
+    return next(
+      new AppError(result.error.details[0].message, StatusCodes.BAD_REQUEST)
+    );
+  }
   user.password = password;
   user.passwordResetToken = undefined;
   user.passwordResetExpires = undefined;
-
-  if (password !== passwordConfirm)
-    return next(
-      new AppError("Two passwords are not the same.", StatusCodes.BAD_REQUEST)
-    );
 
   await user.save();
 
@@ -191,8 +184,20 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 });
 
 exports.updatePassword = catchAsync(async (req, res, next) => {
-  const { password, newPassword, newPasswordConfirm } = req.body;
-  const user = await db.Users.findByPk(req.user.id);
+  const { password, newPassword } = req.body;
+
+  const result = authValidator.updatePassword.validate(req.body);
+  if (result.error) {
+    return next(
+      new AppError(result.error.details[0].message, StatusCodes.BAD_REQUEST)
+    );
+  }
+
+  const user = await db.Users.findByPk(req.user.id, {
+    attributes: {
+      include: ["password"],
+    },
+  });
   const isPasswordCorrect = await user.correctPassword(user.password, password);
 
   if (!isPasswordCorrect)
@@ -201,12 +206,6 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
     );
 
   user.password = newPassword;
-
-  if (user.password !== newPasswordConfirm)
-    return next(
-      new AppError("Two passwords are not the same.", StatusCodes.BAD_REQUEST)
-    );
-
   await user.save();
 
   Token.sendUser(res, StatusCodes.OK, user);

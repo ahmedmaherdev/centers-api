@@ -110,7 +110,6 @@ module.exports = (db) => {
         },
         attributes: {
           exclude: [
-            "studentId",
             "password",
             "isSuspended",
             "isActive",
@@ -153,7 +152,7 @@ module.exports = (db) => {
   User.searchedAttributes = ["name"];
 
   Student.hasOne(User, {
-    as: "student",
+    as: "user",
     foreignKey: "studentId",
   });
 
