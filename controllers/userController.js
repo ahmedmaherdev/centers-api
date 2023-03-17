@@ -77,16 +77,16 @@ exports.deleteMeMiddleware = (req, res, next) => {
 exports.deleteMe = factoryHandler.deleteOne(db.Users);
 
 exports.updateMyPhotoMiddleware = async (req, res, next) => {
-  const { publicid: publicId } = req.body;
+  const { publicId } = req.body;
   req.params.id = req.user.id;
 
   try {
-    const data = await cloudinary.api.resource(publicId, {
+    await cloudinary.api.resource(publicId, {
       resource_type: "image",
     });
 
     req.body = {
-      photo: data.publicid,
+      photo: publicId,
     };
 
     next();
@@ -95,7 +95,7 @@ exports.updateMyPhotoMiddleware = async (req, res, next) => {
   }
 };
 
-exports.updateMyPhoto = factoryHandler.updateOne(db.User);
+exports.updateMyPhoto = factoryHandler.updateOne(db.Users);
 
 exports.updateMeAsStudentMiddleware = async (req, res, next) => {
   const { parentPhone, gender, schoolYearId } = req.body;

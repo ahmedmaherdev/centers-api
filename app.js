@@ -65,6 +65,9 @@ app.use(compression());
 app.use("/api/v1/auth", routes.Auth);
 app.use("/api/v1/users", routes.User);
 app.use("/api/v1/schoolYears", routes.SchoolYear);
+app.use("/api/v1/departments", routes.Department);
+app.use("/api/v1/subjects", routes.Subject);
+app.use("/api/v1/upload", routes.Upload);
 
 app.get("/", (req, res) => {
   res.status(404).json({

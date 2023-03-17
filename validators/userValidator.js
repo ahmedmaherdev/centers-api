@@ -8,7 +8,7 @@ exports.createUser = joi.object({
     .string()
     .custom((value, helpers) => {
       if (!isMobilePhone(value, "ar-EG"))
-        return helpers.message(`Invalid input data. invalid phone number.`);
+        return helpers.message(`Invalid phone number.`);
     })
     .required(),
   password: joi.string().min(8).required(),
@@ -27,7 +27,7 @@ exports.updateUser = joi.object({
   email: joi.string().email(),
   phone: joi.string().custom((value, helpers) => {
     if (!isMobilePhone(value, "ar-EG"))
-      return helpers.message(`Invalid input data. invalid phone number.`);
+      return helpers.message(`Invalid phone number.`);
   }),
   role: joi.string().valid("student", "manager", "admin"),
 });
@@ -37,12 +37,12 @@ exports.updateMe = joi.object({
   email: joi.string().email(),
   phone: joi.string().custom((value, helpers) => {
     if (!isMobilePhone(value, "ar-EG"))
-      return helpers.message(`Invalid input data. invalid phone number.`);
+      return helpers.message(`Invalid phone number.`);
   }),
   gender: joi.string().valid("male", "female"),
   parentPhone: joi.string().custom((value, helpers) => {
     if (!isMobilePhone(value, "ar-EG"))
-      return helpers.message(`Invalid input data. invalid phone number.`);
+      return helpers.message(`Invalid phone number.`);
   }),
   schoolYearId: joi.number(),
 });

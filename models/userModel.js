@@ -4,7 +4,6 @@ const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 
 module.exports = (db) => {
-  const Student = require("./studentModel")(db);
   const User = db.define(
     "User",
     {
@@ -47,7 +46,7 @@ module.exports = (db) => {
 
       photo: {
         type: DataTypes.STRING,
-        defaultValue: "/img/users/default.jpg",
+        defaultValue: "userPhotos/default.jpg",
       },
 
       isActive: {
@@ -70,7 +69,7 @@ module.exports = (db) => {
               })
             )
               throw new Error(
-                "This password must have at least 1 uppercase character and 1 lowercase character and 6 numbers."
+                "This password must have at least 1 uppercase character and 1 lowercase character and numbers."
               );
           },
         },
@@ -119,7 +118,7 @@ module.exports = (db) => {
           ],
         },
 
-        include: [{ model: Student, as: "student" }],
+        include: [{ model: db.Students, as: "student" }],
       },
     }
   );
@@ -151,15 +150,14 @@ module.exports = (db) => {
 
   User.searchedAttributes = ["name"];
 
-  Student.hasOne(User, {
-    as: "user",
-    foreignKey: "studentId",
-  });
-
-  User.belongsTo(Student, {
+  User.belongsTo(db.Students, {
     as: "student",
     foreignKey: "studentId",
   });
 
+  db.Students.hasOne(User, {
+    as: "user",
+    foreignKey: "studentId",
+  });
   return User;
 };

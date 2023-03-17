@@ -8,7 +8,7 @@ exports.signup = joi.object({
     .string()
     .custom((value, helpers) => {
       if (!isMobilePhone(value, "ar-EG"))
-        return helpers.message(`Invalid input data. invalid phone number.`);
+        return helpers.message(`Invalid phone number.`);
     })
     .required(),
   password: joi.string().min(8).required(),
@@ -24,10 +24,11 @@ exports.signup = joi.object({
     .string()
     .custom((value, helpers) => {
       if (!isMobilePhone(value, "ar-EG"))
-        return helpers.message(`Invalid input data. invalid phone number.`);
+        return helpers.message(`Invalid phone number.`);
     })
     .required(),
   schoolYearId: joi.number().required(),
+  departmentId: joi.number().required(),
 });
 
 exports.login = joi.object({
@@ -40,7 +41,7 @@ exports.loginAsParent = joi.object({
     .string()
     .custom((value, helpers) => {
       if (!isMobilePhone(value, "ar-EG"))
-        return helpers.message(`Invalid input data. invalid phone number.`);
+        return helpers.message(`Invalid phone number.`);
     })
     .required(),
   code: joi.number().required(),

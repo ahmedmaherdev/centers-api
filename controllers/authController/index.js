@@ -9,15 +9,14 @@ const db = require("../../models");
 const { Op } = require("sequelize");
 const stringToNumber = require("../../utils/stringToNumber");
 const authValidator = require("../../validators/authValidator");
+const validate = require("../../utils/validate");
 
 exports.loginAsParent = catchAsync(async (req, res, next) => {
   const { parentPhone, code } = req.body;
 
-  const result = authValidator.loginAsParent.validate(req.body);
-  if (result.error) {
-    return next(
-      new AppError(result.error.details[0].message, StatusCodes.BAD_REQUEST)
-    );
+  const errorMessage = validate(req, authValidator.loginAsParent);
+  if (errorMessage) {
+    return next(new AppError(errorMessage, StatusCodes.BAD_REQUEST));
   }
 
   const student = await db.Students.findOne({
@@ -41,15 +40,20 @@ exports.loginAsParent = catchAsync(async (req, res, next) => {
 });
 
 exports.signup = catchAsync(async (req, res, next) => {
-  const { name, email, phone, password, parentPhone, gender, schoolYearId } =
-    req.body;
+  const {
+    name,
+    email,
+    phone,
+    password,
+    parentPhone,
+    gender,
+    schoolYearId,
+    departmentId,
+  } = req.body;
 
-  const result = authValidator.signup.validate(req.body);
-
-  if (result.error) {
-    return next(
-      new AppError(result.error.details[0].message, StatusCodes.BAD_REQUEST)
-    );
+  const errorMessage = validate(req, authValidator.signup);
+  if (errorMessage) {
+    return next(new AppError(errorMessage, StatusCodes.BAD_REQUEST));
   }
 
   const user = await db.Users.create(
@@ -62,6 +66,7 @@ exports.signup = catchAsync(async (req, res, next) => {
         parentPhone,
         gender,
         schoolYearId,
+        departmentId,
       },
     },
     {
@@ -80,11 +85,10 @@ exports.signup = catchAsync(async (req, res, next) => {
 exports.login = catchAsync(async (req, res, next) => {
   const { password, email } = req.body;
 
-  const result = authValidator.login.validate(req.body);
-  if (result.error) {
-    return next(
-      new AppError(result.error.details[0].message, StatusCodes.BAD_REQUEST)
-    );
+  const errorMessage = validate(req, authValidator.login);
+  console.log(errorMessage);
+  if (errorMessage) {
+    return next(new AppError(errorMessage, StatusCodes.BAD_REQUEST));
   }
 
   const user = await db.Users.findOne({
@@ -100,6 +104,25 @@ exports.login = catchAsync(async (req, res, next) => {
       new AppError("Incorrect email or password.", StatusCodes.BAD_REQUEST)
     );
 
+  if (user.isSuspended)
+    return next(
+      new AppError(
+        "Student is suspended, please contact support to active your account.",
+        StatusCodes.UNAUTHORIZED
+      )
+    );
+
+  if (
+    user.student &&
+    new Date(user.student.subscriptedTill) < new Date(Date.now())
+  )
+    return next(
+      new AppError(
+        "Student must be subscribe first to access the app.",
+        StatusCodes.UNAUTHORIZED
+      )
+    );
+
   Token.sendUser(res, StatusCodes.OK, user);
 });
 
@@ -111,11 +134,9 @@ exports.logout = catchAsync((req, res, next) => {
 
 exports.forgetPassword = catchAsync(async (req, res, next) => {
   const { email } = req.body;
-  const result = authValidator.forgetPassword.validate(req.body);
-  if (result.error) {
-    return next(
-      new AppError(result.error.details[0].message, StatusCodes.BAD_REQUEST)
-    );
+  const errorMessage = validate(req, authValidator.forgetPassword);
+  if (errorMessage) {
+    return next(new AppError(errorMessage, StatusCodes.BAD_REQUEST));
   }
 
   const user = await db.Users.findOne({ where: { email } });
@@ -168,11 +189,9 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
       new AppError("Token is invalid or has expired", StatusCodes.BAD_REQUEST)
     );
 
-  const result = authValidator.resetPassword.validate(req.body);
-  if (result.error) {
-    return next(
-      new AppError(result.error.details[0].message, StatusCodes.BAD_REQUEST)
-    );
+  const errorMessage = validate(req, authValidator.resetPassword);
+  if (errorMessage) {
+    return next(new AppError(errorMessage, StatusCodes.BAD_REQUEST));
   }
   user.password = password;
   user.passwordResetToken = undefined;
@@ -186,11 +205,9 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
 exports.updatePassword = catchAsync(async (req, res, next) => {
   const { password, newPassword } = req.body;
 
-  const result = authValidator.updatePassword.validate(req.body);
-  if (result.error) {
-    return next(
-      new AppError(result.error.details[0].message, StatusCodes.BAD_REQUEST)
-    );
+  const errorMessage = validate(req, authValidator.updatePassword);
+  if (errorMessage) {
+    return next(new AppError(errorMessage, StatusCodes.BAD_REQUEST));
   }
 
   const user = await db.Users.findByPk(req.user.id, {
