@@ -1,18 +1,22 @@
 const express = require("express");
 const router = express.Router();
-const SchoolYears = require("../controllers/schoolYearController");
+const schoolYears = require("../controllers/schoolYearController");
 const restrictTo = require("../utils/restrictTo");
 const protect = require("../controllers/authController/protect");
 
-router.get("/", SchoolYears.getAllSchoolYears);
-router.get("/:id", SchoolYears.getSchoolYear);
+router.get("/", schoolYears.getAllSchoolYears);
+router.get("/:id", schoolYears.getSchoolYear);
 
 router.use(protect);
 router.use(restrictTo("admin"));
-router.post("/", SchoolYears.createSchoolYear);
+router.post(
+  "/",
+  schoolYears.createAndUpdateSchoolYearMiddleware,
+  schoolYears.createSchoolYear
+);
 router
   .route("/:id")
-  .patch(SchoolYears.updateSchoolYear)
-  .delete(SchoolYears.deleteSchoolYear);
+  .patch(schoolYears.updateSchoolYear)
+  .delete(schoolYears.deleteSchoolYear);
 
 module.exports = router;

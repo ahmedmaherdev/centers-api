@@ -2,11 +2,9 @@ const { DataTypes } = require("sequelize");
 const { isMobilePhone } = require("validator");
 
 module.exports = (db) => {
-  const SchoolYear = require("./schoolYearModel")(db);
   const Student = db.define(
     "Student",
     {
-      classroom: DataTypes.ENUM("first", "second"),
       gender: DataTypes.ENUM("male", "female"),
       parentPhone: {
         type: DataTypes.STRING,
@@ -22,26 +20,44 @@ module.exports = (db) => {
         type: DataTypes.DATE,
         defaultValue: () => new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days
       },
+      presence: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+      },
+      allPresence: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+      },
+      absence: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+      },
       code: DataTypes.INTEGER,
     },
     {
       defaultScope: {
-        include: [{ model: SchoolYear, as: "schoolYear" }],
+        include: [
+          { model: db.SchoolYears, as: "schoolYear" },
+          { model: db.Departments, as: "department" },
+        ],
         attributes: {
-          exclude: ["schoolYearId", "code"],
+          exclude: ["schoolYearId", "departmentId", "code"],
         },
       },
     }
   );
 
-  SchoolYear.hasOne(Student, {
+  Student.belongsTo(db.SchoolYears, {
     as: "schoolYear",
-    foreignkey: "schoolYearId",
-  });
-  Student.belongsTo(SchoolYear, {
-    as: "schoolYear",
-    foreignkey: "schoolYearId",
+    foreignkey: { name: "schoolYearId", allowNull: false },
   });
 
+  Student.belongsTo(db.Departments, {
+    as: "department",
+    foreignKey: {
+      name: "departmentId",
+      allowNull: false,
+    },
+  });
   return Student;
 };

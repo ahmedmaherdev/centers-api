@@ -58,7 +58,9 @@ exports.createOne = (Model) =>
 exports.updateOne = (Model) =>
   catchAsync(async (req, res, next) => {
     const { id } = req.params;
-    let data = await Model.update(req.body, { where: { id } });
+    let data = await Model.update(req.body, {
+      where: { id },
+    });
 
     data = await Model.findByPk(id);
     const modelName = Model.name.toLowerCase();

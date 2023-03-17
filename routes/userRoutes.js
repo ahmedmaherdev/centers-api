@@ -13,6 +13,11 @@ router.patch(
   users.updateMyPhotoMiddleware,
   users.updateMyPhoto
 );
+router.patch(
+  "/updateMeAsStudent",
+  users.updateMeAsStudentMiddleware,
+  users.updateMeAsStudent
+);
 router.delete("/deleteMe", users.deleteMeMiddleware, users.deleteMe);
 
 router.use(restrictTo("admin"));
@@ -24,7 +29,7 @@ router.get("/search", users.searchUser);
 router
   .route("/:id")
   .get(users.getUser)
-  .patch(users.updateUser)
+  .patch(users.updateUserMiddleware, users.updateUser)
   .delete(users.deleteUser);
 
 module.exports = router;

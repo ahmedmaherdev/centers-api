@@ -24,7 +24,11 @@ module.exports = catchAsync(async (req, res, next) => {
 
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
 
-  const currentUser = await db.Users.findByPk(decoded.id);
+  const currentUser = await db.Users.findByPk(decoded.id, {
+    attributes: {
+      include: ["isSuspended"],
+    },
+  });
 
   if (!currentUser)
     return next(
@@ -38,6 +42,25 @@ module.exports = catchAsync(async (req, res, next) => {
     return next(
       new AppError(
         "User recently changed the password! Please log in again.",
+        StatusCodes.UNAUTHORIZED
+      )
+    );
+
+  if (currentUser.isSuspended)
+    return next(
+      new AppError(
+        "Student is suspended, please contact support to active your account.",
+        StatusCodes.UNAUTHORIZED
+      )
+    );
+
+  if (
+    currentUser.student &&
+    new Date(currentUser.student.subscriptedTill) < new Date(Date.now())
+  )
+    return next(
+      new AppError(
+        "Student must be subscribe first to access the app.",
         StatusCodes.UNAUTHORIZED
       )
     );

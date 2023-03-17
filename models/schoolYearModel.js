@@ -5,6 +5,7 @@ module.exports = (db) => {
     name: {
       type: DataTypes.STRING,
       allowNull: false,
+      unique: true,
     },
   });
 
