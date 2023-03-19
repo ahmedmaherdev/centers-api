@@ -1,9 +1,21 @@
 const { Sequelize } = require("sequelize");
-const config = require("./config");
-const db = new Sequelize(config.database, config.user, config.password, {
-  host: config.host,
-  dialect: config.dialect,
-  pool: config.pool,
+const dotenv = require("dotenv");
+
+dotenv.config();
+
+const connectionString =
+  process.env.NODE_ENV === "production"
+    ? process.env.DATABASE
+    : process.env.DATABASE_LOCAL;
+
+const db = new Sequelize(connectionString, {
+  dialect: "mysql",
+  pool: {
+    max: 5,
+    min: 0,
+    acquire: 30000,
+    idle: 10000,
+  },
   logging: false,
 });
 
