@@ -46,7 +46,7 @@ module.exports = (db) => {
 
       photo: {
         type: DataTypes.STRING,
-        defaultValue: "userPhotos/default.jpg",
+        defaultValue: "userPhotos/default_p8adw7",
       },
 
       isActive: {
