@@ -67,6 +67,8 @@ app.use("/api/v1/users", routes.User);
 app.use("/api/v1/schoolYears", routes.SchoolYear);
 app.use("/api/v1/departments", routes.Department);
 app.use("/api/v1/subjects", routes.Subject);
+app.use("/api/v1/teachers", routes.Teacher);
+app.use("/api/v1/sections", routes.Section);
 app.use("/api/v1/upload", routes.Upload);
 
 app.get("/", (req, res) => {
