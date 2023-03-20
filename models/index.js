@@ -24,6 +24,8 @@ db.Departments = require("./departmentModel")(db);
 db.Students = require("./studentModel")(db);
 db.Users = require("./userModel")(db);
 db.Subjects = require("./subjectModel")(db);
+db.Teachers = require("./teacherModel")(db);
+db.Sections = require("./sectionModel")(db);
 db.StudentSubjects = require("./studentSubjectModel")(db);
 
 module.exports = db;
