@@ -2,7 +2,7 @@ const AppError = require("./../utils/appError");
 const { StatusCodes } = require("http-status-codes");
 
 const handleLenError = (err) => {
-  const message = `Invalid input data. ${err.errors[0].path} must be more than ${err.errors[0].validatorArgs[0]} characters and less than ${err.errors[0].validatorArgs[1]} characters.`;
+  const message = `Invalid input data: ${err.errors[0].path} must be more than ${err.errors[0].validatorArgs[0]} characters and less than ${err.errors[0].validatorArgs[1]} characters.`;
   return new AppError(message, StatusCodes.BAD_REQUEST);
 };
 
@@ -27,7 +27,7 @@ const handleValidationErrorDB = (err) => {
   // handle other validation error
   const errors = Object.values(err.errors).map((el) => el.message);
 
-  const message = `Invalid input data. ${errors.join(". ")}`;
+  const message = `Invalid input data: ${errors.join(". ")}`;
   return new AppError(message, StatusCodes.BAD_REQUEST);
 };
 

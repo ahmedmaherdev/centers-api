@@ -33,7 +33,7 @@ module.exports = (db) => {
         validate: {
           customValidator(value) {
             if (!isMobilePhone(value, "ar-EG"))
-              throw new Error("Invalid phone number.");
+              throw new Error("invalid phone number.");
           },
           len: [10, 200],
         },
@@ -69,7 +69,7 @@ module.exports = (db) => {
               })
             )
               throw new Error(
-                "This password must have at least 1 uppercase character and 1 lowercase character and numbers."
+                "this password must have at least 1 uppercase character and 1 lowercase character and numbers."
               );
           },
         },

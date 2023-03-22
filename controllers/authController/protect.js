@@ -49,7 +49,7 @@ module.exports = catchAsync(async (req, res, next) => {
   if (currentUser.isSuspended)
     return next(
       new AppError(
-        "Student is suspended, please contact support to active your account.",
+        "User is suspended, please contact the support to active your account.",
         StatusCodes.UNAUTHORIZED
       )
     );
@@ -60,7 +60,7 @@ module.exports = catchAsync(async (req, res, next) => {
   )
     return next(
       new AppError(
-        "Student must be subscribe first to access the app.",
+        "Student must be subscribe first to access the application.",
         StatusCodes.UNAUTHORIZED
       )
     );
