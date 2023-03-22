@@ -4,6 +4,7 @@ const cloudinary = require("../utils/cloudinary");
 const AppError = require("../utils/appError");
 const { StatusCodes } = require("http-status-codes");
 const userValidator = require("../validators/userValidator");
+const stringToNumber = require("../utils/stringToNumber");
 
 exports.getAllUsers = factoryHandler.getAll(db.Users);
 
@@ -98,7 +99,7 @@ exports.updateMyPhotoMiddleware = async (req, res, next) => {
 exports.updateMyPhoto = factoryHandler.updateOne(db.Users);
 
 exports.updateMeAsStudentMiddleware = async (req, res, next) => {
-  const { parentPhone, gender, schoolYearId } = req.body;
+  const { parentPhone, gender, schoolYearId, departmentId } = req.body;
   const result = userValidator.updateMe.validate(req.body);
 
   if (result.error) {
@@ -107,11 +108,14 @@ exports.updateMeAsStudentMiddleware = async (req, res, next) => {
     );
   }
 
+  let code = stringToNumber(req.user.email);
   req.params.id = req.user.studentId;
   req.body = {
     parentPhone,
     gender,
     schoolYearId,
+    departmentId,
+    code,
   };
 
   next();

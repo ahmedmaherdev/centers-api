@@ -56,7 +56,7 @@ exports.signup = catchAsync(async (req, res, next) => {
     return next(new AppError(errorMessage, StatusCodes.BAD_REQUEST));
   }
 
-  const user = await db.Users.create(
+  let user = await db.Users.create(
     {
       name,
       email,
@@ -79,6 +79,8 @@ exports.signup = catchAsync(async (req, res, next) => {
     { where: { id: user.studentId } }
   );
 
+  user = await db.Users.findByPk(user.id);
+
   Token.sendUser(res, StatusCodes.CREATED, user);
 });
 
@@ -96,7 +98,7 @@ exports.login = catchAsync(async (req, res, next) => {
       email,
     },
     attributes: {
-      include: ["password"],
+      include: ["password", "isSuspended"],
     },
   });
   if (!user || !(await user.correctPassword(user.password, password)))
@@ -107,7 +109,7 @@ exports.login = catchAsync(async (req, res, next) => {
   if (user.isSuspended)
     return next(
       new AppError(
-        "Student is suspended, please contact support to active your account.",
+        "User is suspended, please contact the support to active your account.",
         StatusCodes.UNAUTHORIZED
       )
     );
@@ -118,7 +120,7 @@ exports.login = catchAsync(async (req, res, next) => {
   )
     return next(
       new AppError(
-        "Student must be subscribe first to access the app.",
+        "Student must be subscribe first to access the application.",
         StatusCodes.UNAUTHORIZED
       )
     );
