@@ -27,7 +27,10 @@ exports.deleteSubject = factoryHandler.deleteOne(db.Subjects);
 
 exports.addMySubjects = catchAsync(async (req, res, next) => {
   let subjects = req.body.subjects;
-  const { id: userId } = req.user;
+  const {
+    id: userId,
+    student: { department: userDepartment },
+  } = req.user;
 
   if (subjects.length === 0)
     return next(
@@ -37,7 +40,7 @@ exports.addMySubjects = catchAsync(async (req, res, next) => {
   let studentSubjects = [];
   for (let sub of subjects) {
     const subject = await db.Subjects.findByPk(sub);
-    if (subject) {
+    if (subject && subject.department.id === userDepartment.id) {
       studentSubjects.push({
         studentId: userId,
         subjectId: subject.id,

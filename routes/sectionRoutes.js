@@ -3,8 +3,11 @@ const router = express.Router();
 const sections = require("../controllers/sectionController");
 const restrictTo = require("../utils/restrictTo");
 const protect = require("../controllers/authController/protect");
+const attendances = require("./attendanceRoutes");
 
 router.use(protect);
+router.use("/:sectionId/attendances", attendances);
+
 router.get("/", sections.getAllSections);
 router.get("/:id", sections.getSection);
 

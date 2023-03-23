@@ -6,6 +6,7 @@ const Department = require("./departmentRoutes");
 const Subject = require("./subjectRoutes");
 const Section = require("./sectionRoutes");
 const Upload = require("./uploadRoutes");
+const Qrcode = require("./qrcodeRoutes");
 
 module.exports = {
   User,
@@ -13,7 +14,8 @@ module.exports = {
   SchoolYear,
   Department,
   Subject,
-  Upload,
   Teacher,
   Section,
+  Upload,
+  Qrcode,
 };
