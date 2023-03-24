@@ -1,5 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const db = require("../models");
+const { Op, literal } = require("sequelize");
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 const factoryHandler = require("./factoryHandler");
@@ -49,11 +50,48 @@ exports.createAttendance = factoryHandler.createOne(db.Attendances);
 
 exports.deleteAttendance = factoryHandler.deleteOne(db.Attendances);
 
+exports.finishAttendances = catchAsync(async (req, res, next) => {
+  // get all students that join subject and not presence
+  const presenceStudentsSubQuery = literal(
+    `SELECT studentId FROM Attendances WHERE sectionId = ${
+      req.section.id
+    } AND date = ${new Date().toDateString()} AND status = 'presence'`
+  );
+
+  let absenceStudents = await db.StudentSubjects.findAll({
+    where: {
+      subjectId: req.section.subject.id,
+      studentId: {
+        [Op.notIn]: presenceStudentsSubQuery,
+      },
+    },
+  });
+
+  absenceStudents = absenceStudents.map((item) => {
+    return {
+      studentId: item.studentId,
+      sectionId: req.section.id,
+      status: "absence",
+      createdById: req.user.id,
+    };
+  });
+
+  await db.Attendances.bulkCreate(absenceStudents);
+});
+
 exports.scanStudentQrcodeMiddleware = catchAsync(async (req, res, next) => {
   const { token } = req.body;
 
   const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-  req.student = decoded;
+
+  const student = await db.Users.findByPk(decoded.id);
+
+  if (!student)
+    return next(new AppError("this student not found", StatusCodes.NOT_FOUND));
+  req.student = {
+    id: student.id,
+    name: student.name,
+  };
   next();
 });
 

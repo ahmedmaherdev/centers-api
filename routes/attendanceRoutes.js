@@ -9,10 +9,15 @@ router.use(restrictTo("manager", "admin"));
 router.use(attendances.checkSectionMiddleware);
 
 router.get("/", attendances.getAllAttendances);
+router.get("/finish", attendances.finishAttendances);
 router.get("/:id", attendances.getAttendance);
 router.route("/:id").delete(attendances.deleteAttendance);
 
 router.use(attendances.scanStudentQrcodeMiddleware);
-router.post("/", createAttendanceMiddleware, attendances.createAttendance);
+router.post(
+  "/",
+  attendances.createAttendanceMiddleware,
+  attendances.createAttendance
+);
 
 module.exports = router;
