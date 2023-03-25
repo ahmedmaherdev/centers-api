@@ -70,6 +70,7 @@ app.use("/api/v1/subjects", routes.Subject);
 app.use("/api/v1/teachers", routes.Teacher);
 app.use("/api/v1/sections", routes.Section);
 app.use("/api/v1/upload", routes.Upload);
+app.use("/api/v1/qrcodes", routes.Qrcode);
 
 app.get("/", (req, res) => {
   res.status(404).json({
