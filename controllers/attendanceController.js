@@ -6,6 +6,8 @@ const catchAsync = require("../utils/catchAsync");
 const factoryHandler = require("./factoryHandler");
 const jwt = require("jsonwebtoken");
 const { promisify } = require("util");
+const Sender = require("../utils/Sender");
+const moment = require("moment");
 
 exports.getAllAttendancesMiddleware = (req, res, next) => {
   const { sectionId } = req.params;
@@ -42,6 +44,7 @@ exports.createAttendanceMiddleware = async (req, res, next) => {
       studentId,
       status: "presence",
     };
+    next();
   } catch (error) {
     next(new AppError("Can not join this section.", StatusCodes.BAD_REQUEST));
   }
@@ -53,9 +56,9 @@ exports.deleteAttendance = factoryHandler.deleteOne(db.Attendances);
 exports.finishAttendances = catchAsync(async (req, res, next) => {
   // get all students that join subject and not presence
   const presenceStudentsSubQuery = literal(
-    `SELECT studentId FROM Attendances WHERE sectionId = ${
+    `(SELECT studentId FROM Attendances WHERE sectionId = ${
       req.section.id
-    } AND date = ${new Date().toDateString()} AND status = 'presence'`
+    } AND date = '${moment(Date.now()).format("YYYY-MM-DD")}')`
   );
 
   let absenceStudents = await db.StudentSubjects.findAll({
@@ -77,12 +80,15 @@ exports.finishAttendances = catchAsync(async (req, res, next) => {
   });
 
   await db.Attendances.bulkCreate(absenceStudents);
+  Sender.send(res, StatusCodes.OK, undefined, {
+    message: "section is ended successfully.",
+  });
 });
 
 exports.scanStudentQrcodeMiddleware = catchAsync(async (req, res, next) => {
-  const { token } = req.body;
+  const { qr } = req.body;
 
-  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+  const decoded = await promisify(jwt.verify)(qr, process.env.JWT_SECRET);
 
   const student = await db.Users.findByPk(decoded.id);
 
@@ -91,6 +97,7 @@ exports.scanStudentQrcodeMiddleware = catchAsync(async (req, res, next) => {
   req.student = {
     id: student.id,
     name: student.name,
+    studentId: student.student.id,
   };
   next();
 });

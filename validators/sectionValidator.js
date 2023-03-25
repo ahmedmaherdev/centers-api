@@ -6,13 +6,13 @@ exports.createSection = joi.object({
   day: joi
     .string()
     .valid(
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday"
+      "sunday",
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday"
     )
     .required(),
 
@@ -25,13 +25,13 @@ exports.updateSection = joi.object({
   day: joi
     .string()
     .valid(
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday"
+      "sunday",
+      "monday",
+      "tuesday",
+      "wednesday",
+      "thursday",
+      "friday",
+      "saturday"
     ),
   time: joi.string(),
 });

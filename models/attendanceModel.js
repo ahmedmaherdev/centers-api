@@ -1,4 +1,6 @@
 const { DataTypes, fn, col } = require("sequelize");
+const moment = require("moment");
+const { maxAllowedAbsence } = require("../config");
 
 module.exports = (db) => {
   const Attendance = db.define(
@@ -11,39 +13,61 @@ module.exports = (db) => {
 
       date: {
         type: DataTypes.DATEONLY,
-        defaultValue: () => new Date(Date.now),
+        defaultValue: () => moment(Date.now()).format("YYYY-MM-DD"),
       },
     },
     {
       hooks: {
         afterSave: async function (attendance, options) {
-          // const presence = await Attendance.count({
-          //   where: {
-          //     studentId: attendance.studentId,
-          //     status: "presence",
-          //   },
-          // });
-
-          // const absence = await Attendance.count({
-          //   where: {
-          //     studentId: attendance.studentId,
-          //     sectionId: attendance.sectionId,
-          //     status: "absence",
-          //   },
-          // });
-
-          const data = Attendance.findAll({
+          const presence = await Attendance.count({
             where: {
               studentId: attendance.studentId,
-              sectionId: attendance.sectionId,
+              status: "presence",
             },
-            attributes: ["status", fn("count", col("status"), "count")],
-            group: ["status"],
           });
 
-          console.log(data);
+          const absence = await Attendance.count({
+            where: {
+              studentId: attendance.studentId,
+              status: "absence",
+            },
+          });
 
-          // change presence and absence to student
+          if (absence >= maxAllowedAbsence) user.isSuspended = true;
+          user = await db.Users.findByPk(attendance.studentId);
+
+          user.student.presence = presence;
+          user.student.absence = absence;
+
+          await user.save();
+          await user.student.save();
+        },
+
+        afterBulkCreate: async function (attendances, options) {
+          for (let attendance of attendances) {
+            const presence = await Attendance.count({
+              where: {
+                studentId: attendance.studentId,
+                status: "presence",
+              },
+            });
+
+            const absence = await Attendance.count({
+              where: {
+                studentId: attendance.studentId,
+                status: "absence",
+              },
+            });
+
+            if (absence >= maxAllowedAbsence) user.isSuspended = true;
+            user = await db.Users.findByPk(attendance.studentId);
+
+            user.student.presence = presence;
+            user.student.absence = absence;
+
+            await user.save();
+            await user.student.save();
+          }
         },
       },
       indexes: [

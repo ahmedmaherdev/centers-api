@@ -8,10 +8,16 @@ router.use(protect);
 router.use(restrictTo("manager", "admin"));
 router.use(attendances.checkSectionMiddleware);
 
-router.get("/", attendances.getAllAttendances);
+router.get(
+  "/",
+  attendances.getAllAttendancesMiddleware,
+  attendances.getAllAttendances
+);
 router.get("/finish", attendances.finishAttendances);
-router.get("/:id", attendances.getAttendance);
-router.route("/:id").delete(attendances.deleteAttendance);
+router
+  .route("/:id")
+  .get(attendances.getAttendance)
+  .delete(attendances.deleteAttendance);
 
 router.use(attendances.scanStudentQrcodeMiddleware);
 router.post(

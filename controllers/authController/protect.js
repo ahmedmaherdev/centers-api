@@ -65,6 +65,13 @@ module.exports = catchAsync(async (req, res, next) => {
       )
     );
 
-  req.user = currentUser;
+  req.user = {
+    id: currentUser.id,
+    role: currentUser.role,
+    name: currentUser.name,
+    studentId: currentUser.student?.id,
+    departmentId: currentUser.student?.department?.id,
+    schoolYearId: currentUser.student?.schoolYear?.id,
+  };
   next();
 });
