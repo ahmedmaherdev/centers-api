@@ -6,13 +6,13 @@ module.exports = (db) => {
     {
       day: {
         type: DataTypes.ENUM(
-          "Sunday",
-          "Monday",
-          "Tuesday",
-          "Wednesday",
-          "Thursday",
-          "Friday",
-          "Saturday"
+          "sunday",
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday"
         ),
       },
       time: {
@@ -23,12 +23,11 @@ module.exports = (db) => {
       defaultScope: {
         include: [
           { as: "subject", model: db.Subjects },
-          { as: "department", model: db.Departments },
           { as: "teacher", model: db.Teachers },
         ],
 
         attributes: {
-          exclude: ["departmentId", "subjectId", "teacherId"],
+          exclude: ["subjectId", "teacherId"],
         },
       },
     }
@@ -38,22 +37,6 @@ module.exports = (db) => {
     as: "subject",
     foreignKey: {
       name: "subjectId",
-      allowNull: false,
-    },
-  });
-
-  Section.belongsTo(db.Departments, {
-    as: "department",
-    foreignKey: {
-      name: "departmentId",
-      allowNull: false,
-    },
-  });
-
-  Section.belongsTo(db.SchoolYears, {
-    as: "schoolYear",
-    foreignKey: {
-      name: "schoolYearId",
       allowNull: false,
     },
   });
