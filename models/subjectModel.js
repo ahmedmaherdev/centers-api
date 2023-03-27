@@ -18,20 +18,19 @@ module.exports = (db) => {
       indexes: [
         {
           unique: true,
-          fields: ["departmentId", "name"],
+          fields: ["name", "schoolYearId"],
         },
       ],
       defaultScope: {
         include: [
           {
             model: db.Departments,
-            as: "department",
+            as: "departments",
+            through: {
+              attributes: [],
+            },
           },
         ],
-
-        attributes: {
-          exclude: ["departmentId"],
-        },
       },
     }
   );
@@ -40,14 +39,6 @@ module.exports = (db) => {
     as: "schoolYear",
     foreignKey: {
       name: "schoolYearId",
-      allowNull: false,
-    },
-  });
-
-  subject.belongsTo(db.Departments, {
-    as: "department",
-    foreignKey: {
-      name: "departmentId",
       allowNull: false,
     },
   });

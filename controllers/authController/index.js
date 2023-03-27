@@ -88,7 +88,6 @@ exports.login = catchAsync(async (req, res, next) => {
   const { password, email } = req.body;
 
   const errorMessage = validate(req, authValidator.login);
-  console.log(errorMessage);
   if (errorMessage) {
     return next(new AppError(errorMessage, StatusCodes.BAD_REQUEST));
   }

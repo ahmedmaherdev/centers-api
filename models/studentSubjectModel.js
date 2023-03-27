@@ -20,9 +20,8 @@ module.exports = (db) => {
           });
 
           const user = await db.Users.findByPk(studentSubjects[0].studentId);
-          const student = await db.Students.findByPk(user.studentId);
-          student.allPresence = sections;
-          await student.save();
+          user.student.allPresence = sections;
+          await user.student.save();
         },
       },
       indexes: [

@@ -49,7 +49,7 @@ exports.getMeMiddleware = (req, res, next) => {
 exports.getMe = factoryHandler.getOne(db.Users);
 
 exports.updateMeMiddleware = async (req, res, next) => {
-  const { name, email, phone, parentPhone, gender, schoolYearId } = req.body;
+  const { name, email, phone } = req.body;
   const result = userValidator.updateMe.validate(req.body);
 
   if (result.error) {
