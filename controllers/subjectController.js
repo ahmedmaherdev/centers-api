@@ -10,7 +10,7 @@ exports.getAllSubjects = factoryHandler.getAll(db.Subjects);
 
 exports.getSubject = factoryHandler.getOne(db.Subjects);
 
-exports.createAndUpdateSubjectMiddleware = (req, res, next) => {
+exports.createSubjectMiddleware = (req, res, next) => {
   const result = subjectValidator.createSubject.validate(req.body);
   if (result.error) {
     return next(
@@ -19,8 +19,33 @@ exports.createAndUpdateSubjectMiddleware = (req, res, next) => {
   }
   next();
 };
-exports.createSubject = factoryHandler.createOne(db.Subjects);
 
+exports.createSubject = catchAsync(async (req, res, next) => {
+  const { name, schoolYearId, sections, departments } = req.body;
+
+  const createdDepartments = await db.Departments.findAll({
+    where: { id: departments },
+  });
+
+  const subject = await db.Subjects.create({
+    name,
+    schoolYearId,
+    sections,
+  });
+  await subject.setDepartments(createdDepartments);
+
+  Sender.send(res, StatusCodes.CREATED, subject);
+});
+
+exports.updateSubjectMiddleware = async (req, res, next) => {
+  const result = subjectValidator.updateSubject.validate(req.body);
+  if (result.error) {
+    return next(
+      new AppError(result.error.details[0].message, StatusCodes.BAD_REQUEST)
+    );
+  }
+  next();
+};
 exports.updateSubject = factoryHandler.updateOne(db.Subjects);
 
 exports.deleteSubject = factoryHandler.deleteOne(db.Subjects);

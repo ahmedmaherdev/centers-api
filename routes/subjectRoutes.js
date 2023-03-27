@@ -11,14 +11,10 @@ router.use(protect);
 
 router.post("/addMySubjects", restrictTo("student"), subjects.addMySubjects);
 router.use(restrictTo("admin"));
-router.post(
-  "/",
-  subjects.createAndUpdateSubjectMiddleware,
-  subjects.createSubject
-);
+router.post("/", subjects.createSubjectMiddleware, subjects.createSubject);
 router
   .route("/:id")
-  .patch(subjects.updateSubject)
+  .patch(subjects.updateSubjectMiddleware, subjects.updateSubject)
   .delete(subjects.deleteSubject);
 
 module.exports = router;
