@@ -62,7 +62,10 @@ exports.addMySubjects = catchAsync(async (req, res, next) => {
   let studentSubjects = [];
   for (let sub of subjects) {
     const subject = await db.Subjects.findByPk(sub);
-    if (subject && subject.department.id === userDepartmentId) {
+    if (
+      subject &&
+      subject.departments.some((dep) => dep.id === userDepartmentId)
+    ) {
       studentSubjects.push({
         studentId: userId,
         subjectId: subject.id,
