@@ -15,7 +15,11 @@ exports.getAll = (Model) =>
       .paginate()
       .sort();
 
-    const allCount = await Model.count(featuresBeforePagination.query);
+    const allCount = await Model.count({
+      distinct: true,
+      col: `${Model.name}.id`,
+      ...featuresBeforePagination.query,
+    });
     const data = await Model.findAll(features.query);
 
     Sender.send(
@@ -83,7 +87,6 @@ exports.deleteOne = (Model) =>
         id,
       },
     });
-    console.log(data);
     const modelName = Model.name.toLowerCase();
     if (!data)
       return next(
