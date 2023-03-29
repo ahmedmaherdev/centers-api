@@ -15,12 +15,27 @@ exports.getAll = (Model) =>
       .paginate()
       .sort();
 
+    if (req.filterObj) {
+      featuresBeforePagination.query.where = {
+        ...featuresBeforePagination.query.where,
+        ...req.filterObj,
+      };
+
+      features.query.where = {
+        ...features.query.where,
+        ...req.filterObj,
+      };
+    }
+
     const allCount = await Model.count({
       distinct: true,
       col: `${Model.name}.id`,
       ...featuresBeforePagination.query,
     });
-    const data = await Model.findAll(features.query);
+
+    const data = await Model.findAll({
+      ...features.query,
+    });
 
     Sender.send(
       res,

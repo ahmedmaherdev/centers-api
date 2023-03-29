@@ -4,7 +4,7 @@ const subjects = require("../controllers/subjectController");
 const restrictTo = require("../utils/restrictTo");
 const protect = require("../controllers/authController/protect");
 
-router.get("/", subjects.getAllSubjects);
+router.get("/", subjects.getAllSubjectsMiddleware, subjects.getAllSubjects);
 router.get("/:id", subjects.getSubject);
 
 router.use(protect);
