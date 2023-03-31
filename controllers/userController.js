@@ -43,6 +43,11 @@ exports.searchUser = factoryHandler.search(db.Users);
 
 exports.getMeMiddleware = (req, res, next) => {
   req.params.id = req.user.id;
+  req.includedObj = {
+    attributes: {
+      include: ["email", "phone"],
+    },
+  };
   next();
 };
 
