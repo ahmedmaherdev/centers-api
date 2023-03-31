@@ -10,7 +10,7 @@ const compression = require("compression");
 const cookieParser = require("cookie-parser");
 
 const AppError = require("./utils/appError");
-const globalErrorHandler = require("./controllers/errorController");
+const globalErrorHandler = require("./middlewares/errorMiddleware");
 
 const app = express();
 
@@ -69,6 +69,7 @@ app.use("/api/v1/departments", routes.Department);
 app.use("/api/v1/subjects", routes.Subject);
 app.use("/api/v1/teachers", routes.Teacher);
 app.use("/api/v1/sections", routes.Section);
+app.use("/api/v1/exams", routes.Exam);
 app.use("/api/v1/upload", routes.Upload);
 app.use("/api/v1/qrcodes", routes.Qrcode);
 

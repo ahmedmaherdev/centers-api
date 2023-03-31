@@ -74,10 +74,8 @@ exports.signup = catchAsync(async (req, res, next) => {
     }
   );
 
-  await db.Students.update(
-    { code: stringToNumber(user.email) },
-    { where: { id: user.studentId } }
-  );
+  user.student.code = stringToNumber(user.email);
+  await user.student.save();
 
   user = await db.Users.findByPk(user.id);
 
@@ -97,7 +95,7 @@ exports.login = catchAsync(async (req, res, next) => {
       email,
     },
     attributes: {
-      include: ["password", "isSuspended"],
+      include: ["email", "password", "isSuspended"],
     },
   });
   if (!user || !(await user.correctPassword(user.password, password)))
@@ -140,7 +138,12 @@ exports.forgetPassword = catchAsync(async (req, res, next) => {
     return next(new AppError(errorMessage, StatusCodes.BAD_REQUEST));
   }
 
-  const user = await db.Users.findOne({ where: { email } });
+  const user = await db.Users.findOne({
+    where: { email },
+    attributes: {
+      include: ["email"],
+    },
+  });
   if (!user)
     return next(
       new AppError("There is no user with this email.", StatusCodes.BAD_REQUEST)
@@ -152,7 +155,7 @@ exports.forgetPassword = catchAsync(async (req, res, next) => {
 
   try {
     const URL = `http://${req.hostname}/reset-password?token=${resetToken}`;
-    console.log(URL);
+
     await new Email(user, URL).sendPasswordReset();
 
     Sender.send(res, StatusCodes.OK, undefined, {

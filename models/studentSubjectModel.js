@@ -12,7 +12,6 @@ module.exports = (db) => {
     {
       hooks: {
         afterBulkCreate: async function (studentSubjects, options) {
-          // let subjects = studentSubjects.map((s) => s.subjectId);
           const sections = await db.StudentSubjects.sum("sections", {
             where: {
               studentId: studentSubjects[0].studentId,

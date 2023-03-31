@@ -1,4 +1,4 @@
-const AppError = require("./../utils/appError");
+const AppError = require("../utils/appError");
 const { StatusCodes } = require("http-status-codes");
 
 const handleLenError = (err) => {
