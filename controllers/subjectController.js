@@ -9,7 +9,7 @@ const { Op, literal } = require("sequelize");
 
 exports.getAllSubjectsMiddleware = async (req, res, next) => {
   const { departmentId } = req.query;
-
+  const { id: userId } = req.user;
   if (departmentId) {
     // addaitional filter obj
     req.filterObj = {
@@ -22,6 +22,7 @@ exports.getAllSubjectsMiddleware = async (req, res, next) => {
 
     delete req.query.departmentId;
   }
+
   next();
 };
 exports.getAllSubjects = factoryHandler.getAll(db.Subjects);
@@ -94,4 +95,38 @@ exports.addMySubjects = catchAsync(async (req, res, next) => {
 
   const StudentSubjects = await db.StudentSubjects.bulkCreate(studentSubjects);
   Sender.send(res, StatusCodes.OK, StudentSubjects);
+});
+
+exports.getMySubjects = catchAsync(async (req, res, next) => {
+  const { id: studentId, departmentId } = req.user;
+
+  // get student subjects
+  const studentSubjects = await db.StudentSubjects.findAll({
+    where: { studentId },
+    attributes: ["subjectId"],
+  });
+
+  // get all subjects by student department
+  let subjects = await db.Subjects.findAll({
+    where: {
+      id: {
+        [Op.in]: literal(
+          `(SELECT subjectId FROM SubjectDepartments WHERE departmentId = ${departmentId})`
+        ),
+      },
+    },
+  });
+
+  // put isJoined flag that check if subject enrolled by student
+  subjects = subjects.map((sub) => {
+    let isJoined = studentSubjects.some(
+      (studentSubject) => sub.id === studentSubject.subjectId
+    );
+    sub.dataValues.isJoined = isJoined;
+    return sub;
+  });
+
+  Sender.send(res, StatusCodes.OK, subjects, {
+    count: subjects.length,
+  });
 });

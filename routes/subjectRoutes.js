@@ -4,12 +4,20 @@ const subjects = require("../controllers/subjectController");
 const restrictTo = require("../utils/restrictTo");
 const protect = require("../controllers/authController/protect");
 
+router.get(
+  "/getMySubjects",
+  protect,
+  restrictTo("student"),
+  subjects.getMySubjects
+);
+
 router.get("/", subjects.getAllSubjectsMiddleware, subjects.getAllSubjects);
 router.get("/:id", subjects.getSubject);
 
 router.use(protect);
 
 router.post("/addMySubjects", restrictTo("student"), subjects.addMySubjects);
+
 router.use(restrictTo("admin"));
 router.post("/", subjects.createSubjectMiddleware, subjects.createSubject);
 router

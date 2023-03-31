@@ -40,7 +40,7 @@ module.exports = (db) => {
       },
 
       role: {
-        type: DataTypes.ENUM("student", "parent", "manager", "admin"),
+        type: DataTypes.ENUM("student", "manager", "admin"),
         defaultValue: "student",
       },
 
@@ -109,6 +109,8 @@ module.exports = (db) => {
         },
         attributes: {
           exclude: [
+            "email",
+            "phone",
             "password",
             "isSuspended",
             "isActive",

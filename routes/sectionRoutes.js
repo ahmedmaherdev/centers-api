@@ -8,7 +8,7 @@ const attendances = require("./attendanceRoutes");
 router.use(protect);
 router.use("/:sectionId/attendances", attendances);
 
-router.get("/", sections.getAllSections);
+router.get("/", sections.getAllSectionsMiddleware, sections.getAllSections);
 router.get("/:id", sections.getSection);
 
 router.use(restrictTo("admin"));

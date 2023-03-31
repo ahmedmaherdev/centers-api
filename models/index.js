@@ -29,5 +29,6 @@ db.Sections = require("./sectionModel")(db);
 db.Attendances = require("./attendanceModel")(db);
 db.StudentSubjects = require("./studentSubjectModel")(db);
 db.SubjectDepartments = require("./subjectDepartmentModel")(db);
+db.Exams = require("./examModel")(db);
 
 module.exports = db;
