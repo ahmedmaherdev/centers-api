@@ -53,7 +53,7 @@ exports.getAll = (Model) =>
 exports.getOne = (Model) =>
   catchAsync(async (req, res, next) => {
     const id = req.params.id;
-    const data = await Model.findByPk(id);
+    const data = await Model.findByPk(id, req.includedObj);
     const modelName = Model.name.toLowerCase();
     if (!data)
       return next(
