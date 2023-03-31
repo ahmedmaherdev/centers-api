@@ -5,7 +5,38 @@ const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const { StatusCodes } = require("http-status-codes");
 const Sender = require("../utils/Sender");
+const { Op, literal } = require("sequelize");
 
+exports.getAllSectionsMiddleware = async (req, res, next) => {
+  const { departmentId, schoolYearId } = req.query;
+
+  if (departmentId) {
+    // addaitional filter obj
+    req.filterObj = {
+      subjectId: {
+        [Op.in]: literal(
+          `(SELECT subjectId FROM SubjectDepartments WHERE departmentId = ${departmentId})`
+        ),
+      },
+    };
+
+    delete req.query.departmentId;
+  }
+
+  if (schoolYearId) {
+    // addaitional filter obj
+    req.filterObj = {
+      subjectId: {
+        [Op.in]: literal(
+          `(SELECT id FROM Subjects WHERE schoolYearId = ${schoolYearId})`
+        ),
+      },
+    };
+
+    delete req.query.schoolYearId;
+  }
+  next();
+};
 exports.getAllSections = factoryHandler.getAll(db.Sections);
 
 exports.getSection = factoryHandler.getOne(db.Sections);

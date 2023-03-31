@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 const { isMobilePhone } = require("validator");
+const { maxAllowedAbsence } = require("../config");
 
 module.exports = (db) => {
   const Student = db.define(
@@ -32,6 +33,20 @@ module.exports = (db) => {
         type: DataTypes.INTEGER,
         defaultValue: 0,
       },
+      maxAllowedAbsence: {
+        type: DataTypes.INTEGER,
+        defaultValue: maxAllowedAbsence,
+      },
+      lastAbsence: DataTypes.DATEONLY,
+
+      allExams: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+      },
+      passExams: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+      },
       code: DataTypes.INTEGER,
     },
     {
@@ -41,7 +56,7 @@ module.exports = (db) => {
           { model: db.Departments, as: "department" },
         ],
         attributes: {
-          exclude: ["schoolYearId", "departmentId", "code"],
+          exclude: ["schoolYearId", "departmentId", "code", "lastAbsence"],
         },
       },
     }
