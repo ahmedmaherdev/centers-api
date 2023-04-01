@@ -3,6 +3,9 @@ const router = express.Router();
 const exams = require("../controllers/examController");
 const restrictTo = require("../utils/restrictTo");
 const protect = require("../controllers/authController/protect");
+const questions = require("./questionRoutes");
+
+router.use("/:examId/questions", questions);
 
 router.use(protect);
 router.get("/", exams.getAllExamsMiddleware, exams.getAllExams);

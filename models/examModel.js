@@ -24,15 +24,15 @@ module.exports = (db) => {
         defaultValue: 0,
       },
 
-      isOpen: {
-        type: DataTypes.BOOLEAN,
-        defaultValue: false,
+      startedAt: {
+        type: DataTypes.DATE,
+        allowNull: false,
       },
     },
     {
       defaultScope: {
         attributes: {
-          exclude: ["subjectId", "createdById", "isOpen"],
+          exclude: ["subjectId", "createdById"],
         },
         include: [
           {
@@ -42,7 +42,6 @@ module.exports = (db) => {
           {
             as: "createdBy",
             model: db.Users,
-            // attributes: ["id", "name", "role", "photo"],
           },
         ],
       },
