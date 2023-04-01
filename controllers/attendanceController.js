@@ -86,11 +86,11 @@ exports.finishAttendances = catchAsync(async (req, res, next) => {
 });
 
 exports.scanStudentQrcodeMiddleware = catchAsync(async (req, res, next) => {
-  const { qr } = req.body;
+  const { studentId } = req.body;
 
-  const decoded = await promisify(jwt.verify)(qr, process.env.JWT_SECRET);
+  // const decoded = await promisify(jwt.verify)(qr, process.env.JWT_SECRET);
 
-  const student = await db.Users.findByPk(decoded.id);
+  const student = await db.Users.findByPk(studentId);
 
   if (!student)
     return next(new AppError("this student not found", StatusCodes.NOT_FOUND));
