@@ -77,7 +77,11 @@ exports.signup = catchAsync(async (req, res, next) => {
   user.student.code = stringToNumber(user.email);
   await user.student.save();
 
-  user = await db.Users.findByPk(user.id);
+  user = await db.Users.findByPk(user.id, {
+    attributes: {
+      include: ["email", "phone"],
+    },
+  });
 
   Token.sendUser(res, StatusCodes.CREATED, user);
 });
@@ -95,7 +99,7 @@ exports.login = catchAsync(async (req, res, next) => {
       email,
     },
     attributes: {
-      include: ["email", "password", "isSuspended"],
+      include: ["email", "password", "isSuspended", "phone"],
     },
   });
   if (!user || !(await user.correctPassword(user.password, password)))
