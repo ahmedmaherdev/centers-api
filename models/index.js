@@ -30,5 +30,6 @@ db.Attendances = require("./attendanceModel")(db);
 db.StudentSubjects = require("./studentSubjectModel")(db);
 db.SubjectDepartments = require("./subjectDepartmentModel")(db);
 db.Exams = require("./examModel")(db);
+db.Questions = require("./questionModel")(db);
 
 module.exports = db;

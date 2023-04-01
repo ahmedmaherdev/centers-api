@@ -10,6 +10,7 @@ exports.createExam = joi.object({
 
   subjectId: joi.number().integer().required(),
   photo: joi.string(),
+  startedAt: joi.date().required(),
 });
 
 exports.updateExam = joi.object({
