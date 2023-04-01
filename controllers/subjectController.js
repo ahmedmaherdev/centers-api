@@ -9,7 +9,6 @@ const { Op, literal } = require("sequelize");
 
 exports.getAllSubjectsMiddleware = async (req, res, next) => {
   const { departmentId } = req.query;
-  const { id: userId } = req.user;
   if (departmentId) {
     // addaitional filter obj
     req.filterObj = {
