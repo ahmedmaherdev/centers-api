@@ -14,9 +14,8 @@ module.exports = (db) => {
         allowNull: false,
 
         get() {
-          return this.getDataValue("choices")
-            ? JSON.parse(this.getDataValue("choices"))
-            : null;
+          let choices = this.getDataValue("choices");
+          return typeof choices === "string" ? JSON.parse(choices) : choices;
         },
       },
 
@@ -48,6 +47,7 @@ module.exports = (db) => {
 
   Question.belongsTo(db.Exams, {
     as: "exam",
+    onDelete: "CASCADE",
     foreignKey: {
       name: "examId",
       allowNull: false,
