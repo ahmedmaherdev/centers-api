@@ -1,11 +1,3 @@
-// - Grades
-//  - examId
-//  - totalQuestions
-//  - correct
-//  - wrong
-//  - isPassed
-//  - studentId
-// isPassed = (correct >= wrong )
 const { DataTypes } = require("sequelize");
 
 module.exports = (db) => {
@@ -29,6 +21,14 @@ module.exports = (db) => {
       },
     },
     {
+      defaultScope: {
+        include: [
+          {
+            model: db.Exams,
+            as: "exam",
+          },
+        ],
+      },
       hooks: {
         beforeSave: function (grade, options) {
           grade.isPassed = grade.correct >= grade.wrong;

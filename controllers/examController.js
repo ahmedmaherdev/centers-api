@@ -12,7 +12,7 @@ exports.getAllExamsMiddleware = (req, res, next) => {
     req.filterObj = {
       subjectId: {
         [Op.in]: literal(
-          `(SELECT subjectId FROM StudentSubjects WHERE studentId = ${userId})`
+          `(SELECT subjectId FROM ${db.StudentSubjects.tableName} WHERE studentId = ${userId})`
         ),
       },
     };
@@ -45,3 +45,10 @@ exports.updateExamMiddleware = (req, res, next) => {
 exports.updateExam = factoryHandler.updateOne(db.Exams);
 
 exports.deleteExam = factoryHandler.deleteOne(db.Exams);
+
+exports.getMyExamsMiddleware = (req, res, next) => {
+  const { id: userId } = req.user;
+  req.query.studentId = userId;
+  next();
+};
+exports.getMyExams = factoryHandler.getAll(db.Grades);

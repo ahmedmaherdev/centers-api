@@ -9,6 +9,7 @@ router.use("/:examId/questions", questions);
 
 router.use(protect);
 router.get("/", exams.getAllExamsMiddleware, exams.getAllExams);
+router.get("/getMyExams", exams.getMyExamsMiddleware, exams.getMyExams);
 router.get("/:id", exams.getExam);
 
 router.use(restrictTo("admin", "manager"));
