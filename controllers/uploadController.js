@@ -9,15 +9,28 @@ const generateSignature = async (folder) => {
 };
 
 exports.generateUserSignature = catchAsync(async (req, res, next) => {
-  const URL = await generateSignature("userPhotos");
+  const folder = "userPhotos";
+  const URL = await generateSignature(folder);
   Sender.send(res, StatusCodes.OK, undefined, {
     url: URL,
+    folder,
   });
 });
 
 exports.generateTeacherSignature = catchAsync(async (req, res, next) => {
-  const URL = await generateSignature("teacherPhotos");
+  const folder = "teacherPhotos";
+  const URL = await generateSignature(folder);
   Sender.send(res, StatusCodes.OK, undefined, {
     url: URL,
+    folder,
+  });
+});
+
+exports.generateExamSignature = catchAsync(async (req, res, next) => {
+  const folder = "examPhotos";
+  const URL = await generateSignature(folder);
+  Sender.send(res, StatusCodes.OK, undefined, {
+    url: URL,
+    folder,
   });
 });

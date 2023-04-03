@@ -1,10 +1,3 @@
-// - Answers
-//   - examId
-//   - questionId
-//   - answer
-//   - studentId
-//   - createdAt
-
 const { DataTypes } = require("sequelize");
 
 module.exports = (db) => {
@@ -17,6 +10,14 @@ module.exports = (db) => {
       },
     },
     {
+      defaultScope: {
+        include: [
+          {
+            model: db.Questions,
+            as: "question",
+          },
+        ],
+      },
       indexes: [
         {
           unique: true,

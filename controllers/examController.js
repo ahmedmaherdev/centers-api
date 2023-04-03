@@ -5,6 +5,7 @@ const AppError = require("../utils/appError");
 const { Op, literal } = require("sequelize");
 const examValidator = require("../validators/examValidator");
 const validate = require("../utils/validate");
+const catchAsync = require("../utils/catchAsync");
 
 exports.getAllExamsMiddleware = (req, res, next) => {
   const { role: userRole, id: userId } = req.user;
@@ -13,6 +14,12 @@ exports.getAllExamsMiddleware = (req, res, next) => {
       subjectId: {
         [Op.in]: literal(
           `(SELECT subjectId FROM ${db.StudentSubjects.tableName} WHERE studentId = ${userId})`
+        ),
+      },
+
+      id: {
+        [Op.notIn]: literal(
+          `(SELECT examId FROM ${db.Grades.tableName} WHERE studentId = ${userId})`
         ),
       },
     };
@@ -46,9 +53,14 @@ exports.updateExam = factoryHandler.updateOne(db.Exams);
 
 exports.deleteExam = factoryHandler.deleteOne(db.Exams);
 
-exports.getMyExamsMiddleware = (req, res, next) => {
-  const { id: userId } = req.user;
-  req.query.studentId = userId;
+exports.checkExamMiddleware = catchAsync(async (req, res, next) => {
+  const { examId } = req.params;
+  const exam = await db.Exams.findByPk(examId);
+  if (!exam)
+    return next(
+      new AppError(`No exam with this id: ${examId}`, StatusCodes.NOT_FOUND)
+    );
+
+  req.exam = exam;
   next();
-};
-exports.getMyExams = factoryHandler.getAll(db.Grades);
+});

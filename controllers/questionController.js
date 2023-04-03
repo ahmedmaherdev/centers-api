@@ -14,12 +14,17 @@ exports.getAllQuestions = catchAsync(async (req, res, next) => {
     where: {
       examId,
     },
-    sort: ["createdAt"],
+    sort: ["id"],
   });
 
-  Sender.send(res, StatusCodes.OK, questions, {
-    questions: questions.length,
-  });
+  Sender.send(
+    res,
+    StatusCodes.OK,
+    { questions },
+    {
+      questions: questions.length,
+    }
+  );
 });
 
 exports.getQuestion = factoryHandler.getOne(db.Questions);
@@ -48,15 +53,3 @@ exports.updateQuestionMiddleware = async (req, res, next) => {
 exports.updateQuestion = factoryHandler.updateOne(db.Questions);
 
 exports.deleteQuestion = factoryHandler.deleteOne(db.Questions);
-
-exports.checkExamMiddleware = catchAsync(async (req, res, next) => {
-  const { examId } = req.params;
-  const exam = await db.Exams.findByPk(examId);
-  if (!exam)
-    return next(
-      new AppError(`No exam with this id: ${examId}`, StatusCodes.NOT_FOUND)
-    );
-
-  req.exam = exam;
-  next();
-});

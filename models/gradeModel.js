@@ -26,6 +26,7 @@ module.exports = (db) => {
           {
             model: db.Exams,
             as: "exam",
+            attributes: ["id", "name", "photo", "questionsCount"],
           },
         ],
       },
