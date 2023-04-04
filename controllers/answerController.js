@@ -3,6 +3,9 @@ const db = require("../models");
 const factoryHandler = require("./factoryHandler");
 const catchAsync = require("../utils/catchAsync");
 const Sender = require("../utils/Sender");
+const validate = require("../utils/validate");
+const answerValidator = require("../validators/answerValidator");
+const AppError = require("../utils/appError");
 
 exports.getMyAnswers = catchAsync(async (req, res, next) => {
   const { id: studentId } = req.user;
@@ -31,6 +34,10 @@ exports.createAnswers = catchAsync(async (req, res, next) => {
   const { id: examId } = req.exam;
   const { answers: studentAnswers } = req.body;
 
+  const errorMessage = validate(req, answerValidator.createAnswers);
+  if (errorMessage)
+    return next(new AppError(errorMessage, StatusCodes.BAD_REQUEST));
+
   const examAnswers = await db.Questions.findAll({
     where: {
       examId,
@@ -46,21 +53,23 @@ exports.createAnswers = catchAsync(async (req, res, next) => {
     examId,
   });
 
+  let createdAnswers = [];
   examAnswers.forEach((question) => {
+    // find student answer
     let studentAnswer = studentAnswers.find(
       (ans) => ans.questionId === question.id && ans.answer === question.answer
     );
 
+    // if student answer found then correct answer else wrong answer
     studentAnswer ? studentGrade.correct++ : studentGrade.wrong++;
-  });
 
-  let createdAnswers = studentAnswers.map((ans) => {
-    return {
+    // push answer to createdAnswers
+    createdAnswers.push({
       examId: examId,
       studentId: studentId,
-      questionId: ans.questionId,
-      answer: ans.answer,
-    };
+      questionId: question.id,
+      answer: studentAnswer?.answer ?? null,
+    });
   });
 
   await db.Answers.bulkCreate(createdAnswers);

@@ -72,7 +72,6 @@ app.use("/api/v1/sections", routes.Section);
 app.use("/api/v1/exams", routes.Exam);
 app.use("/api/v1/grades", routes.Grade);
 app.use("/api/v1/upload", routes.Upload);
-app.use("/api/v1/qrcodes", routes.Qrcode);
 
 app.get("/", (req, res) => {
   res.status(404).json({

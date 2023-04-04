@@ -34,6 +34,23 @@ module.exports = (db) => {
         beforeSave: function (grade, options) {
           grade.isPassed = grade.correct >= grade.wrong;
         },
+
+        afterSave: async function (grade, options) {
+          const studentData = await db.Users.findByPk(grade.studentId);
+          const totalExams = await Grade.count({
+            where: {
+              studentId: studentData.id,
+            },
+          });
+
+          const passExams = await Grade.count({
+            where: { isPassed: true },
+          });
+
+          studentData.student.allExams = totalExams;
+          studentData.student.passExams = passExams;
+          await studentData.student.save();
+        },
       },
 
       indexes: [

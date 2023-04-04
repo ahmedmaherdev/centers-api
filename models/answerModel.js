@@ -6,7 +6,6 @@ module.exports = (db) => {
     {
       answer: {
         type: DataTypes.ENUM("A", "B", "C", "D"),
-        allowNull: false,
       },
     },
     {

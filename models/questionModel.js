@@ -1,6 +1,21 @@
 const { DataTypes } = require("sequelize");
 
 module.exports = (db) => {
+  const calcExamQuestions = async (question, Question) => {
+    const { examId } = question;
+    const questionsCount = await Question.count({
+      where: { examId },
+    });
+
+    await db.Exams.update(
+      {
+        questionsCount,
+      },
+      {
+        where: { id: examId },
+      }
+    );
+  };
   const Question = db.define(
     "Question",
     {
@@ -27,19 +42,11 @@ module.exports = (db) => {
     {
       hooks: {
         afterSave: async (question, options) => {
-          const { examId } = question;
-          const questionsCount = await Question.count({
-            where: { examId },
-          });
+          await calcExamQuestions(question, Question);
+        },
 
-          await db.Exams.update(
-            {
-              questionsCount,
-            },
-            {
-              where: { id: examId },
-            }
-          );
+        afterDestroy: async function (question, options) {
+          await calcExamQuestions(question, Question);
         },
       },
     }

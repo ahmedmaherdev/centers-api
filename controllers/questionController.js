@@ -22,7 +22,7 @@ exports.getAllQuestions = catchAsync(async (req, res, next) => {
     StatusCodes.OK,
     { questions },
     {
-      questions: questions.length,
+      count: questions.length,
     }
   );
 });
