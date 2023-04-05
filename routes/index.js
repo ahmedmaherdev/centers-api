@@ -8,7 +8,6 @@ const Section = require("./sectionRoutes");
 const Exam = require("./examRoutes");
 const Grade = require("./gradeRoutes");
 const Upload = require("./uploadRoutes");
-const Qrcode = require("./qrcodeRoutes");
 
 module.exports = {
   User,
@@ -21,5 +20,4 @@ module.exports = {
   Exam,
   Grade,
   Upload,
-  Qrcode,
 };
