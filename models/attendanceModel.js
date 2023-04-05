@@ -72,6 +72,7 @@ module.exports = (db) => {
 
   Attendance.belongsTo(db.Users, {
     as: "student",
+    onDelete: "CASCADE",
     foreignKey: {
       name: "studentId",
       allowNull: false,
@@ -80,6 +81,7 @@ module.exports = (db) => {
 
   Attendance.belongsTo(db.Sections, {
     as: "section",
+    onDelete: "CASCADE",
     foreignKey: {
       name: "sectionId",
       allowNull: false,

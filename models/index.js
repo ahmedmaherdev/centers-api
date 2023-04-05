@@ -31,5 +31,7 @@ db.StudentSubjects = require("./studentSubjectModel")(db);
 db.SubjectDepartments = require("./subjectDepartmentModel")(db);
 db.Exams = require("./examModel")(db);
 db.Questions = require("./questionModel")(db);
+db.Grades = require("./gradeModel")(db);
+db.Answers = require("./answerModel")(db);
 
 module.exports = db;

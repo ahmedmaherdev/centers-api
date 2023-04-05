@@ -32,16 +32,12 @@ module.exports = (db) => {
     {
       defaultScope: {
         attributes: {
-          exclude: ["subjectId", "createdById"],
+          exclude: ["subjectId"],
         },
         include: [
           {
             as: "subject",
             model: db.Subjects,
-          },
-          {
-            as: "createdBy",
-            model: db.Users,
           },
         ],
       },
