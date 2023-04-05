@@ -15,6 +15,7 @@ module.exports = (db) => {
   db.Subjects.belongsToMany(db.Departments, {
     through: SubjectDepartment,
     as: "departments",
+    onDelete: "CASCADE",
     foreignKey: {
       name: "subjectId",
       allowNull: false,
@@ -24,6 +25,7 @@ module.exports = (db) => {
   db.Departments.belongsToMany(db.Subjects, {
     through: SubjectDepartment,
     as: "subjects",
+    onDelete: "CASCADE",
     foreignKey: {
       name: "departmentId",
       allowNull: false,

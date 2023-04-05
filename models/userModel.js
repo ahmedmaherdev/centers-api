@@ -159,7 +159,10 @@ module.exports = (db) => {
 
   db.Students.hasOne(User, {
     as: "user",
-    foreignKey: "studentId",
+    onDelete: "CASCADE",
+    foreignKey: {
+      name: "studentId",
+    },
   });
   return User;
 };

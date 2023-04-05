@@ -33,6 +33,7 @@ module.exports = (db) => {
   );
 
   StudentSubject.belongsTo(db.Users, {
+    onDelete: "CASCADE",
     foreignKey: {
       name: "studentId",
       allowNull: false,
