@@ -4,6 +4,8 @@ module.exports = (db) => {
   const calcExamQuestions = async (question, Question) => {
     const { examId } = question;
     const questionsCount = await Question.count({
+      distinct: true,
+      col: `${Question.name}.id`,
       where: { examId },
     });
 
@@ -40,6 +42,15 @@ module.exports = (db) => {
       },
     },
     {
+      defaultScope: {
+        include: [
+          {
+            as: "subject",
+            model: db.Subjects,
+            attributes: ["id", "name"],
+          },
+        ],
+      },
       hooks: {
         afterSave: async (question, options) => {
           await calcExamQuestions(question, Question);
@@ -51,6 +62,14 @@ module.exports = (db) => {
       },
     }
   );
+
+  Question.belongsTo(db.Subjects, {
+    as: "subject",
+    foreignKey: {
+      name: "subjectId",
+      allowNull: false,
+    },
+  });
 
   Question.belongsTo(db.Exams, {
     as: "exam",

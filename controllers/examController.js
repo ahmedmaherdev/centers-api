@@ -11,12 +11,7 @@ exports.getAllExamsMiddleware = (req, res, next) => {
   const { role: userRole, id: userId } = req.user;
   if (userRole === "student") {
     req.filterObj = {
-      subjectId: {
-        [Op.in]: literal(
-          `(SELECT subjectId FROM ${db.StudentSubjects.tableName} WHERE studentId = ${userId})`
-        ),
-      },
-
+      departmentId: req.user.departmentId,
       id: {
         [Op.notIn]: literal(
           `(SELECT examId FROM ${db.Grades.tableName} WHERE studentId = ${userId})`
