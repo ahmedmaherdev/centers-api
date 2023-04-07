@@ -56,7 +56,7 @@ module.exports = catchAsync(async (req, res, next) => {
 
   if (
     currentUser.student &&
-    new Date(currentUser.student.subscriptedTill) < new Date(Date.now())
+    new Date(currentUser.student.subscribedTill) < new Date(Date.now())
   )
     return next(
       new AppError(
