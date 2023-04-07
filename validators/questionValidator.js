@@ -11,6 +11,7 @@ exports.createQuestion = joi.object({
     })
     .required(),
   answer: joi.string().valid("A", "B", "C", "D").required(),
+  subjectId: joi.number().integer().required(),
 });
 
 exports.updateQuestion = joi.object({
@@ -22,4 +23,5 @@ exports.updateQuestion = joi.object({
     D: joi.string(),
   }),
   answer: joi.string().valid("A", "B", "C", "D"),
+  subjectId: joi.number().integer(),
 });

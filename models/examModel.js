@@ -32,22 +32,22 @@ module.exports = (db) => {
     {
       defaultScope: {
         attributes: {
-          exclude: ["subjectId"],
+          exclude: ["departmentId"],
         },
         include: [
           {
-            as: "subject",
-            model: db.Subjects,
+            as: "department",
+            model: db.Departments,
           },
         ],
       },
     }
   );
 
-  Exam.belongsTo(db.Subjects, {
-    as: "subject",
+  Exam.belongsTo(db.Departments, {
+    as: "department",
     foreignKey: {
-      name: "subjectId",
+      name: "departmentId",
       allowNull: false,
     },
   });

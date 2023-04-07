@@ -33,5 +33,6 @@ db.Exams = require("./examModel")(db);
 db.Questions = require("./questionModel")(db);
 db.Grades = require("./gradeModel")(db);
 db.Answers = require("./answerModel")(db);
+db.Subscribes = require("./subscribeModel")(db);
 
 module.exports = db;

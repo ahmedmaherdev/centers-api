@@ -1,6 +1,6 @@
 const { DataTypes } = require("sequelize");
 const { isMobilePhone } = require("validator");
-const { maxAllowedAbsence } = require("../config");
+const { maxAllowedAbsence, trialSubscribedTill } = require("../config");
 
 module.exports = (db) => {
   const Student = db.define(
@@ -17,9 +17,9 @@ module.exports = (db) => {
           },
         },
       },
-      subscriptedTill: {
+      subscribedTill: {
         type: DataTypes.DATE,
-        defaultValue: () => new Date(Date.now() + 5 * 24 * 60 * 60 * 1000), // 5 days
+        defaultValue: () => new Date(Date.now() + trialSubscribedTill), // 5 days
       },
       presence: {
         type: DataTypes.INTEGER,
