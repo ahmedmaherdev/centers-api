@@ -5,7 +5,7 @@ const { StatusCodes } = require("http-status-codes");
 const Sender = require("../utils/Sender");
 const { literal } = require("sequelize");
 
-exports.getAll = (Model) =>
+exports.getAll = (Model, Logger) =>
   catchAsync(async (req, res, next) => {
     const tableName = Model.tableName.toLowerCase();
     const featuresBeforePagination = new appFeatures(req.query).filter();
@@ -37,6 +37,10 @@ exports.getAll = (Model) =>
       ...features.query,
     });
 
+    const logMsg = req.user
+      ? `${req.user.role} ${req.user.name} find all ${tableName}.`
+      : `find all ${tableName}.`;
+    Logger.info(req.ip, logMsg);
     Sender.send(
       res,
       StatusCodes.OK,
@@ -50,7 +54,7 @@ exports.getAll = (Model) =>
     );
   });
 
-exports.getOne = (Model) =>
+exports.getOne = (Model, Logger) =>
   catchAsync(async (req, res, next) => {
     const id = req.params.id;
     const data = await Model.findByPk(id, req.includedObj);
@@ -59,22 +63,30 @@ exports.getOne = (Model) =>
       return next(
         new AppError(`${modelName} is not found`, StatusCodes.NOT_FOUND)
       );
+
+    const logMsg = req.user
+      ? `${req.user.role} ${req.user.name} find ${data.name} ${modelName}.`
+      : `find ${data.name} ${modelName}.`;
+    Logger.info(req.ip, logMsg);
     Sender.send(res, StatusCodes.OK, {
       [modelName]: data,
     });
   });
 
-exports.createOne = (Model) =>
+exports.createOne = (Model, Logger) =>
   catchAsync(async (req, res, next) => {
     const data = await Model.create(req.body);
     const modelName = Model.name.toLowerCase();
-
+    const logMsg = `${req.user.role} ${
+      req.user.name
+    } create one ${modelName} with data: ${JSON.stringify(data)}.`;
+    Logger.info(req.ip, logMsg);
     Sender.send(res, StatusCodes.CREATED, {
       [modelName]: data,
     });
   });
 
-exports.updateOne = (Model) =>
+exports.updateOne = (Model, Logger) =>
   catchAsync(async (req, res, next) => {
     const { id } = req.params;
     let data = await Model.update(req.body, {
@@ -88,12 +100,18 @@ exports.updateOne = (Model) =>
         new AppError(`${modelName} is not found`, StatusCodes.NOT_FOUND)
       );
 
+    const logMsg = `${req.user.role} ${
+      req.user.name
+    } update one ${modelName} by id: ${
+      req.params.id
+    } with data: ${JSON.stringify(data)}.`;
+    Logger.info(req.ip, logMsg);
     Sender.send(res, StatusCodes.OK, {
       [modelName]: data,
     });
   });
 
-exports.deleteOne = (Model) =>
+exports.deleteOne = (Model, Logger) =>
   catchAsync(async (req, res, next) => {
     const { id } = req.params;
 
@@ -108,6 +126,8 @@ exports.deleteOne = (Model) =>
         new AppError(`${modelName} is not found`, StatusCodes.NOT_FOUND)
       );
 
+    const logMsg = `${req.user.role} ${req.user.name} delete one ${modelName} by id: ${req.params.id}.`;
+    Logger.warn(req.ip, logMsg);
     Sender.send(res, StatusCodes.NO_CONTENT);
   });
 
