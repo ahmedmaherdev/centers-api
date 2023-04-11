@@ -34,5 +34,6 @@ db.Questions = require("./questionModel")(db);
 db.Grades = require("./gradeModel")(db);
 db.Answers = require("./answerModel")(db);
 db.Subscribes = require("./subscribeModel")(db);
+db.Centers = require("./centerModel")(db);
 
 module.exports = db;
