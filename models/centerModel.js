@@ -1,4 +1,5 @@
 const { DataTypes } = require("sequelize");
+const { isMobilePhone } = require("validator");
 
 module.exports = (db) => {
   const Center = db.define("Center", {
@@ -22,17 +23,9 @@ module.exports = (db) => {
 
     location: {
       type: DataTypes.JSON,
-      validate: {
-        customValidator({ latitude, longitude }) {
-          if (
-            !latitude &&
-            !longitude &&
-            typeof latitude === "number" &&
-            typeof longitude === "number"
-          ) {
-            throw new Error("invalid location.");
-          }
-        },
+      get() {
+        let location = this.getDataValue("location");
+        return typeof location === "string" ? JSON.parse(location) : location;
       },
     },
   });

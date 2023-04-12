@@ -37,10 +37,13 @@ exports.getAll = (Model, Logger) =>
       ...features.query,
     });
 
-    const logMsg = req.user
-      ? `${req.method} ${req.originalUrl} |  ${req.user.role} ${req.user.name} find all ${tableName}.`
-      : `${req.method} ${req.originalUrl} |  find all ${tableName}.`;
-    Logger.info(req.ip, logMsg);
+    // logging data
+    if (Logger) {
+      const logMsg = req.user
+        ? `${req.method} ${req.originalUrl} |  ${req.user.role} ${req.user.name} find all ${tableName}.`
+        : `${req.method} ${req.originalUrl} |  find all ${tableName}.`;
+      Logger.info(req.ip, logMsg);
+    }
     Sender.send(
       res,
       StatusCodes.OK,
@@ -60,18 +63,23 @@ exports.getOne = (Model, Logger) =>
     const data = await Model.findByPk(id, req.includedObj);
     const modelName = Model.name.toLowerCase();
     if (!data) {
-      Logger.error(
-        req.ip,
-        `${req.method} ${req.originalUrl} | STATUS: ${StatusCodes.NOT_FOUND} | ${modelName} is not found.`
-      );
+      if (Logger)
+        Logger.error(
+          req.ip,
+          `${req.method} ${req.originalUrl} | STATUS: ${StatusCodes.NOT_FOUND} | ${modelName} is not found.`
+        );
       return next(
         new AppError(`${modelName} is not found`, StatusCodes.NOT_FOUND)
       );
     }
-    const logMsg = req.user
-      ? `${req.method} ${req.originalUrl} | ${req.user.role} ${req.user.name} find one ${modelName} by id: ${req.params.id}.`
-      : `${req.method} ${req.originalUrl} | find one ${modelName} by id: ${req.params.id}.`;
-    Logger.info(req.ip, logMsg);
+
+    // Logging data
+    if (Logger) {
+      const logMsg = req.user
+        ? `${req.method} ${req.originalUrl} | ${req.user.role} ${req.user.name} find one ${modelName} by id: ${req.params.id}.`
+        : `${req.method} ${req.originalUrl} | find one ${modelName} by id: ${req.params.id}.`;
+      Logger.info(req.ip, logMsg);
+    }
     Sender.send(res, StatusCodes.OK, {
       [modelName]: data,
     });
@@ -81,10 +89,14 @@ exports.createOne = (Model, Logger) =>
   catchAsync(async (req, res, next) => {
     const data = await Model.create(req.body);
     const modelName = Model.name.toLowerCase();
-    const logMsg = `${req.method} ${req.originalUrl} | ${req.user.role} ${
-      req.user.name
-    } create one ${modelName} with data: ${JSON.stringify(data)}.`;
-    Logger.info(req.ip, logMsg);
+
+    // Logging data
+    if (Logger) {
+      const logMsg = `${req.method} ${req.originalUrl} | ${req.user.role} ${
+        req.user.name
+      } create one ${modelName} with data: ${JSON.stringify(data)}.`;
+      Logger.info(req.ip, logMsg);
+    }
     Sender.send(res, StatusCodes.CREATED, {
       [modelName]: data,
     });
@@ -100,21 +112,25 @@ exports.updateOne = (Model, Logger) =>
     data = await Model.findByPk(id);
     const modelName = Model.name.toLowerCase();
     if (!data) {
-      Logger.error(
-        req.ip,
-        `${req.method} ${req.originalUrl} | STATUS: ${StatusCodes.NOT_FOUND} | ${modelName} is not found.`
-      );
+      if (Logger)
+        Logger.error(
+          req.ip,
+          `${req.method} ${req.originalUrl} | STATUS: ${StatusCodes.NOT_FOUND} | ${modelName} is not found.`
+        );
       return next(
         new AppError(`${modelName} is not found`, StatusCodes.NOT_FOUND)
       );
     }
 
-    const logMsg = `${req.method} ${req.originalUrl} | ${req.user.role} ${
-      req.user.name
-    } update one ${modelName} by id: ${
-      req.params.id
-    } with data: ${JSON.stringify(data)}.`;
-    Logger.info(req.ip, logMsg);
+    if (Logger) {
+      const logMsg = `${req.method} ${req.originalUrl} | ${req.user.role} ${
+        req.user.name
+      } update one ${modelName} by id: ${
+        req.params.id
+      } with data: ${JSON.stringify(data)}.`;
+      Logger.info(req.ip, logMsg);
+    }
+
     Sender.send(res, StatusCodes.OK, {
       [modelName]: data,
     });
@@ -131,17 +147,21 @@ exports.deleteOne = (Model, Logger) =>
     });
     const modelName = Model.name.toLowerCase();
     if (!data) {
-      Logger.error(
-        req.ip,
-        `${req.method} ${req.originalUrl} | STATUS: ${StatusCodes.NOT_FOUND} | ${modelName} is not found.`
-      );
+      if (Logger)
+        Logger.error(
+          req.ip,
+          `${req.method} ${req.originalUrl} | STATUS: ${StatusCodes.NOT_FOUND} | ${modelName} is not found.`
+        );
       return next(
         new AppError(`${modelName} is not found`, StatusCodes.NOT_FOUND)
       );
     }
 
-    const logMsg = `${req.method} ${req.originalUrl} | ${req.user.role} ${req.user.name} delete one ${modelName} by id: ${req.params.id}.`;
-    Logger.warn(req.ip, logMsg);
+    // Logging data
+    if (Logger) {
+      const logMsg = `${req.method} ${req.originalUrl} | ${req.user.role} ${req.user.name} delete one ${modelName} by id: ${req.params.id}.`;
+      Logger.warn(req.ip, logMsg);
+    }
     Sender.send(res, StatusCodes.NO_CONTENT);
   });
 
