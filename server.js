@@ -21,6 +21,9 @@ const server = app.listen(PORT, () =>
   console.log(`Server is listening on port: ${PORT}`)
 );
 
+// execute tasks
+require("./utils/tasks");
+
 process.on("unhandledRejection", (err) => {
   console.log("UNHANDLED REJECTION !!!!!!!!");
   console.log(err);
