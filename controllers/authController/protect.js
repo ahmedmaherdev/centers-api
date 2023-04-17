@@ -26,7 +26,7 @@ module.exports = catchAsync(async (req, res, next) => {
 
   const currentUser = await db.Users.findByPk(decoded.id, {
     attributes: {
-      include: ["isSuspended"],
+      include: ["isSuspended", "email"],
     },
   });
 
@@ -69,6 +69,7 @@ module.exports = catchAsync(async (req, res, next) => {
     id: currentUser.id,
     role: currentUser.role,
     name: currentUser.name,
+    email: currentUser.email,
     studentId: currentUser.student?.id,
     departmentId: currentUser.student?.department?.id,
     schoolYearId: currentUser.student?.schoolYear?.id,

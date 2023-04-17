@@ -44,5 +44,6 @@ exports.updateMe = joi.object({
     if (!isMobilePhone(value, "ar-EG"))
       return helpers.message(`Invalid phone number.`);
   }),
-  schoolYearId: joi.number(),
+  schoolYearId: joi.number().integer(),
+  departmentId: joi.number().integer(),
 });
