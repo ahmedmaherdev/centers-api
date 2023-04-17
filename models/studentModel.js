@@ -56,7 +56,7 @@ module.exports = (db) => {
           { model: db.Departments, as: "department" },
         ],
         attributes: {
-          exclude: ["schoolYearId", "departmentId", "code", "lastAbsence"],
+          exclude: ["schoolYearId", "code", "lastAbsence"],
         },
       },
     }

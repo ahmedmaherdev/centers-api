@@ -78,18 +78,37 @@ exports.addMySubjects = catchAsync(async (req, res, next) => {
     );
 
   let studentSubjects = [];
-  for (let sub of subjects) {
-    const subject = await db.Subjects.findByPk(sub);
-    if (
-      subject &&
-      subject.departments.some((dep) => dep.id === userDepartmentId)
-    ) {
+  const departmentSubjects = await db.SubjectDepartments.findAll({
+    where: { departmentId: userDepartmentId },
+    attributes: ["subjectId"],
+  });
+
+  subjects.forEach((subId) => {
+    if (departmentSubjects.some(({ subjectId }) => subjectId === subId))
       studentSubjects.push({
         studentId: userId,
-        subjectId: subject.id,
-        sections: subject.sections,
+        subjectId: subId,
       });
-    }
+  });
+
+  console.log(studentSubjects);
+  // for (let sub of subjects) {
+  //   const subject = await db.Subjects.findByPk(sub);
+  //   if (
+  //     subject &&
+  //     subject.departments.some((dep) => dep.id === userDepartmentId)
+  //   ) {
+  //     studentSubjects.push({
+  //       studentId: userId,
+  //       subjectId: subject.id,
+  //       sections: subject.sections,
+  //     });
+  //   }
+  // }
+  if (studentSubjects.length > 0) {
+    await db.StudentSubjects.destroy({
+      where: { studentId: userId },
+    });
   }
 
   const StudentSubjects = await db.StudentSubjects.bulkCreate(studentSubjects);
