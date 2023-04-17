@@ -4,6 +4,20 @@ const moment = require("moment");
 module.exports = class Logger {
   constructor(route) {
     this.route = route;
+    const transports = [];
+    if (process.env.NODE_ENV === "production") {
+      transports.push(
+        new winston.transports.File({
+          filename: `./logs/${this.route}.log`,
+        }),
+        new winston.transports.File({
+          filename: `./logs/${this.route}.error.log`,
+          level: "error",
+        })
+      );
+    } else {
+      transports.push(new winston.transports.Console());
+    }
     this._logger = winston.createLogger({
       format: winston.format.printf((info) => {
         const dateNow = moment(Date.now()).format("YYYY-MM-DD HH:mm:ss");
@@ -12,16 +26,7 @@ module.exports = class Logger {
         }`;
         return msg;
       }),
-      transports: [
-        new winston.transports.Console(),
-        new winston.transports.File({
-          filename: `./logs/${this.route}.log`,
-        }),
-        new winston.transports.File({
-          filename: `./logs/${this.route}.error.log`,
-          level: "error",
-        }),
-      ],
+      transports,
     });
   }
 

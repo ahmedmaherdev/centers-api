@@ -3,26 +3,20 @@ const { DataTypes, Op, literal } = require("sequelize");
 module.exports = (db) => {
   const StudentSubject = db.define(
     "StudentSubject",
-    {},
+    {
+      sections: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+      },
+    },
     {
       hooks: {
         afterBulkCreate: async function (studentSubjects, options) {
-          const sections = await db.Subjects.sum("sections", {
+          const sections = await db.StudentSubjects.sum("sections", {
             where: {
-              id: {
-                [Op.in]: literal(
-                  `(SELECT DISTINCT subjectId FROM ${StudentSubject.tableName} WHERE studentId = ${studentSubjects[0].studentId})`
-                ),
-              },
+              studentId: studentSubjects[0].studentId,
             },
           });
-          // const sections = await db.StudentSubjects.sum("sections", {
-          //   where: {
-          //     studentId: studentSubjects[0].studentId,
-          //   },
-          // });
-
-          console.log(sections);
 
           const user = await db.Users.findByPk(studentSubjects[0].studentId);
           user.student.allPresence = sections;

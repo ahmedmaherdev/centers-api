@@ -14,4 +14,6 @@ exports.updateSubject = joi.object({
   sections: joi.number(),
 });
 
-exports.addMySubjects = joi.array().items(joi.number().required());
+exports.addMySubjects = joi.object({
+  subjects: joi.array().items(joi.number().required()),
+});
