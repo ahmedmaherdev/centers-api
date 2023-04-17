@@ -112,7 +112,6 @@ exports.updateMeAsStudentMiddleware = async (req, res, next) => {
       new AppError(result.error.details[0].message, StatusCodes.BAD_REQUEST)
     );
   }
-
   let code = stringToNumber(req.user.email);
   req.params.id = req.user.studentId;
   req.body = {
