@@ -1,10 +1,15 @@
 const { DataTypes } = require("sequelize");
-const { subscribedTill } = require("../config");
+const config = require("../config");
+const moment = require("moment");
 
 module.exports = (db) => {
   const Subscribe = db.define(
     "Subscribe",
-    {},
+    {
+      subscribedTill: {
+        type: DataTypes.DATE,
+      },
+    },
     {
       defaultScope: {
         include: [
@@ -21,14 +26,24 @@ module.exports = (db) => {
         ],
       },
       hooks: {
-        afterSave: async function (subscribe, options) {
+        beforeSave: async function (subscribe, options) {
           const studentData = await db.Users.findByPk(subscribe.studentId);
-          let newSubscribedTill =
-            new Date(studentData.student.subscribedTill).getTime() +
-            subscribedTill; // last student subscribedTill + 30 days
 
-          studentData.student.subscribedTill = new Date(newSubscribedTill);
-          await studentData.student.save();
+          let newSubscribedTill = moment(
+            studentData.student?.subscribedTill ?? Date.now()
+          ).add(config.subscribedTill, "days");
+
+          subscribe.subscribedTill = newSubscribedTill;
+          // pass student object to after save hook
+          options.studentData = studentData;
+        },
+
+        afterSave: async function (subscribe, options) {
+          if (options.studentData && options.studentData.student) {
+            options.studentData.student.subscribedTill =
+              subscribe.subscribedTill;
+            await options.studentData.student.save();
+          }
         },
       },
     }
