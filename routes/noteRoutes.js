@@ -10,7 +10,12 @@ router.get("/", notes.getAllNotes);
 router.get("/:id", notes.getNote);
 
 router.use(restrictTo("admin", "manager"));
-router.post("/", notes.createNoteMiddleware, notes.createNote);
+router.post(
+  "/",
+  notes.createNoteMiddleware,
+  notes.createNote,
+  notes.createNoteNotification
+);
 router
   .route("/:id")
   .patch(notes.updateNoteMiddleware, notes.updateNote)

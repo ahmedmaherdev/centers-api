@@ -18,6 +18,9 @@ exports.createAdvertisementMiddleware = (req, res, next) => {
   next();
 };
 exports.createAdvertisement = factoryHandler.createOne(db.Advertisements);
+exports.createAdvertisementNotification = async (req, res, next) => {
+  // notification here
+};
 
 exports.updateAdvertisementMiddleware = (req, res, next) => {
   const result = advertisementValidator.updateAdvertisement.validate(req.body);

@@ -20,6 +20,10 @@ exports.createNoteMiddleware = (req, res, next) => {
 
 exports.createNote = factoryHandler.createOne(db.Notes);
 
+exports.createNoteNotification = async (req, res, next) => {
+  // notification here
+};
+
 exports.updateNoteMiddleware = (req, res, next) => {
   const result = noteValidator.updateNote.validate(req.body);
   if (result.error) {

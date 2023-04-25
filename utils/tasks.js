@@ -10,7 +10,7 @@ const path = require("path");
 
 // every friday hour 3:00 AM
 exports.deleteAllExpiredAdvertisements = cron.schedule(
-  "0 6 21 * * Friday",
+  "0 0 3 * * Friday",
   async () => {
     try {
       const data = await db.Advertisements.destroy({

@@ -13,7 +13,8 @@ router.use(restrictTo("admin", "manager"));
 router.post(
   "/",
   advertisements.createAdvertisementMiddleware,
-  advertisements.createAdvertisement
+  advertisements.createAdvertisement,
+  advertisements.createAdvertisementNotification
 );
 router
   .route("/:id")

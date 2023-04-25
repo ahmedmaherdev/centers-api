@@ -17,4 +17,8 @@ exports.createSubscribeMiddleware = (req, res, next) => {
 
 exports.createSubscribe = factoryHandler.createOne(db.Subscribes);
 
+exports.createSubscribeNotification = async (req, res, next) => {
+  // notification here
+};
+
 exports.deleteSubscribe = factoryHandler.deleteOne(db.Subscribes);

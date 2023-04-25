@@ -13,7 +13,8 @@ router.get("/:id", subscribes.getSubscribe);
 router.post(
   "/",
   subscribes.createSubscribeMiddleware,
-  subscribes.createSubscribe
+  subscribes.createSubscribe,
+  subscribes.createSubscribeNotification
 );
 router.delete("/:id", subscribes.deleteSubscribe);
 

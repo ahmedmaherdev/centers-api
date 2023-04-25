@@ -23,6 +23,7 @@ db.SchoolYears = require("./schoolYearModel")(db);
 db.Departments = require("./departmentModel")(db);
 db.Students = require("./studentModel")(db);
 db.Users = require("./userModel")(db);
+db.UserDeviceTokens = require("./UserDeviceTokenModel")(db);
 db.Subjects = require("./subjectModel")(db);
 db.Teachers = require("./teacherModel")(db);
 db.Sections = require("./sectionModel")(db);

@@ -15,7 +15,12 @@ router.get("/", exams.getAllExamsMiddleware, exams.getAllExams);
 router.get("/:id", exams.getExam);
 
 router.use(restrictTo("admin", "manager"));
-router.post("/", exams.createExamMiddleware, exams.createExam);
+router.post(
+  "/",
+  exams.createExamMiddleware,
+  exams.createExam,
+  exams.createExamNotification
+);
 router
   .route("/:id")
   .patch(exams.updateExamMiddleware, exams.updateExam)

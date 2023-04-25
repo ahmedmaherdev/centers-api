@@ -37,6 +37,10 @@ exports.createExamMiddleware = (req, res, next) => {
 };
 exports.createExam = factoryHandler.createOne(db.Exams);
 
+exports.createExamNotification = async (req, res, next) => {
+  // notification here
+};
+
 exports.updateExamMiddleware = (req, res, next) => {
   const errorMessage = validate(req, examValidator.updateExam);
   if (errorMessage) {

@@ -100,6 +100,7 @@ exports.createOne = (Model, Logger) =>
     Sender.send(res, StatusCodes.CREATED, {
       [modelName]: data,
     });
+    next();
   });
 
 exports.updateOne = (Model, Logger) =>
