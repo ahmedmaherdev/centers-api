@@ -18,10 +18,10 @@ class Notification {
         title: `New ${this.data.type}`,
         body: `You have a new ${this.data.type}`,
       },
-      data: this.data,
+      data: { data: JSON.stringify(this.data) },
       tokens: this.deviceTokens,
     };
-    await admin.messaging().send(message);
+    return await admin.messaging().sendMulticast(message);
   }
 }
 

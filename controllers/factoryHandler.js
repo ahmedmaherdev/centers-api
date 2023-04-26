@@ -100,6 +100,9 @@ exports.createOne = (Model, Logger) =>
     Sender.send(res, StatusCodes.CREATED, {
       [modelName]: data,
     });
+
+    // pass created object to send notification
+    req.createdData = data;
     next();
   });
 
