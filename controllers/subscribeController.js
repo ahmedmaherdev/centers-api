@@ -36,19 +36,20 @@ exports.createSubscribeNotification = async (req, res, next) => {
       attributes: ["deviceToken"],
     });
     userDeviceTokens = userDeviceTokens.map((obj) => obj.deviceToken);
+    if (userDeviceTokens.length > 0) {
+      const subscribeNotification = new Notification(userDeviceTokens, {
+        id,
+        studentId,
+        type,
+        subscribedTill,
+      });
 
-    const subscribeNotification = new Notification(userDeviceTokens, {
-      id,
-      studentId,
-      type,
-      subscribedTill,
-    });
-
-    const res = await subscribeNotification.send();
-    subscribeLogger.info(
-      req.ip,
-      `subscribe notification sent: ${JSON.stringify(res)}`
-    );
+      const res = await subscribeNotification.send();
+      subscribeLogger.info(
+        req.ip,
+        `subscribe notification sent: ${JSON.stringify(res)}`
+      );
+    }
   } catch (error) {
     subscribeLogger.error(
       req.ip,

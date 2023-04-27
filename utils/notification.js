@@ -28,7 +28,7 @@ class Notification {
 module.exports = Notification;
 
 // notification
-// - renew subscribe
-// - new exam
-// - new important advertisement
-// - new note
+// - renew subscribe  - done
+// - new exam - done
+// - new important advertisement - done
+// - new note - done
