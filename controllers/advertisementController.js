@@ -38,7 +38,9 @@ exports.createAdvertisement = factoryHandler.createOne(
 exports.createAdvertisementNotification = async (req, res, next) => {
   // notification here
   try {
-    const { id, schoolYearId } = req.createdData;
+    const { id, schoolYearId, pirority } = req.createdData;
+    // do not send notification if pirority is not important
+    if (pirority !== "important") return next();
     const type = "advertisement";
     const advertisementNotification = new Notification([], {
       type,
