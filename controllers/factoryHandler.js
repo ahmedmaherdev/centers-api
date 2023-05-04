@@ -5,7 +5,7 @@ const { StatusCodes } = require("http-status-codes");
 const Sender = require("../utils/Sender");
 const { literal } = require("sequelize");
 
-exports.getAll = (Model) =>
+exports.getAll = (Model, Logger) =>
   catchAsync(async (req, res, next) => {
     const tableName = Model.tableName.toLowerCase();
     const featuresBeforePagination = new appFeatures(req.query).filter();
@@ -37,6 +37,13 @@ exports.getAll = (Model) =>
       ...features.query,
     });
 
+    // logging data
+    if (Logger) {
+      const logMsg = req.user
+        ? `${req.method} ${req.originalUrl} |  ${req.user.role} ${req.user.name} find all ${tableName}.`
+        : `${req.method} ${req.originalUrl} |  find all ${tableName}.`;
+      Logger.info(req.ip, logMsg);
+    }
     Sender.send(
       res,
       StatusCodes.OK,
@@ -50,31 +57,56 @@ exports.getAll = (Model) =>
     );
   });
 
-exports.getOne = (Model) =>
+exports.getOne = (Model, Logger) =>
   catchAsync(async (req, res, next) => {
     const id = req.params.id;
     const data = await Model.findByPk(id, req.includedObj);
     const modelName = Model.name.toLowerCase();
-    if (!data)
+    if (!data) {
+      if (Logger)
+        Logger.error(
+          req.ip,
+          `${req.method} ${req.originalUrl} | STATUS: ${StatusCodes.NOT_FOUND} | ${modelName} is not found.`
+        );
       return next(
         new AppError(`${modelName} is not found`, StatusCodes.NOT_FOUND)
       );
+    }
+
+    // Logging data
+    if (Logger) {
+      const logMsg = req.user
+        ? `${req.method} ${req.originalUrl} | ${req.user.role} ${req.user.name} find one ${modelName} by id: ${req.params.id}.`
+        : `${req.method} ${req.originalUrl} | find one ${modelName} by id: ${req.params.id}.`;
+      Logger.info(req.ip, logMsg);
+    }
     Sender.send(res, StatusCodes.OK, {
       [modelName]: data,
     });
   });
 
-exports.createOne = (Model) =>
+exports.createOne = (Model, Logger) =>
   catchAsync(async (req, res, next) => {
     const data = await Model.create(req.body);
     const modelName = Model.name.toLowerCase();
 
+    // Logging data
+    if (Logger) {
+      const logMsg = `${req.method} ${req.originalUrl} | ${req.user.role} ${
+        req.user.name
+      } create one ${modelName} with data: ${JSON.stringify(data)}.`;
+      Logger.info(req.ip, logMsg);
+    }
     Sender.send(res, StatusCodes.CREATED, {
       [modelName]: data,
     });
+
+    // pass created object to send notification
+    req.createdData = data;
+    next();
   });
 
-exports.updateOne = (Model) =>
+exports.updateOne = (Model, Logger) =>
   catchAsync(async (req, res, next) => {
     const { id } = req.params;
     let data = await Model.update(req.body, {
@@ -83,17 +115,32 @@ exports.updateOne = (Model) =>
 
     data = await Model.findByPk(id);
     const modelName = Model.name.toLowerCase();
-    if (!data)
+    if (!data) {
+      if (Logger)
+        Logger.error(
+          req.ip,
+          `${req.method} ${req.originalUrl} | STATUS: ${StatusCodes.NOT_FOUND} | ${modelName} is not found.`
+        );
       return next(
         new AppError(`${modelName} is not found`, StatusCodes.NOT_FOUND)
       );
+    }
+
+    if (Logger) {
+      const logMsg = `${req.method} ${req.originalUrl} | ${req.user.role} ${
+        req.user.name
+      } update one ${modelName} by id: ${
+        req.params.id
+      } with data: ${JSON.stringify(data)}.`;
+      Logger.info(req.ip, logMsg);
+    }
 
     Sender.send(res, StatusCodes.OK, {
       [modelName]: data,
     });
   });
 
-exports.deleteOne = (Model) =>
+exports.deleteOne = (Model, Logger) =>
   catchAsync(async (req, res, next) => {
     const { id } = req.params;
 
@@ -103,11 +150,22 @@ exports.deleteOne = (Model) =>
       },
     });
     const modelName = Model.name.toLowerCase();
-    if (!data)
+    if (!data) {
+      if (Logger)
+        Logger.error(
+          req.ip,
+          `${req.method} ${req.originalUrl} | STATUS: ${StatusCodes.NOT_FOUND} | ${modelName} is not found.`
+        );
       return next(
         new AppError(`${modelName} is not found`, StatusCodes.NOT_FOUND)
       );
+    }
 
+    // Logging data
+    if (Logger) {
+      const logMsg = `${req.method} ${req.originalUrl} | ${req.user.role} ${req.user.name} delete one ${modelName} by id: ${req.params.id}.`;
+      Logger.warn(req.ip, logMsg);
+    }
     Sender.send(res, StatusCodes.NO_CONTENT);
   });
 

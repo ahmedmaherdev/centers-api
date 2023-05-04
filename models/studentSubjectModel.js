@@ -1,4 +1,4 @@
-const { DataTypes, Op } = require("sequelize");
+const { DataTypes, Op, literal } = require("sequelize");
 
 module.exports = (db) => {
   const StudentSubject = db.define(
@@ -33,6 +33,7 @@ module.exports = (db) => {
   );
 
   StudentSubject.belongsTo(db.Users, {
+    as: "student",
     onDelete: "CASCADE",
     foreignKey: {
       name: "studentId",
@@ -41,6 +42,7 @@ module.exports = (db) => {
   });
 
   StudentSubject.belongsTo(db.Subjects, {
+    as: "subject",
     foreignKey: {
       name: "subjectId",
       allowNull: false,

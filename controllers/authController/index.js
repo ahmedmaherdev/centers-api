@@ -10,12 +10,18 @@ const { Op } = require("sequelize");
 const stringToNumber = require("../../utils/stringToNumber");
 const authValidator = require("../../validators/authValidator");
 const validate = require("../../utils/validate");
+const Logger = require("../../utils/Logger");
+const authLogger = new Logger("auth");
 
 exports.loginAsParent = catchAsync(async (req, res, next) => {
   const { parentPhone, code } = req.body;
 
   const errorMessage = validate(req, authValidator.loginAsParent);
   if (errorMessage) {
+    authLogger.error(
+      req.ip,
+      `${req.method} ${req.originalUrl} | STATUS: ${StatusCodes.BAD_REQUEST} | ${errorMessage}`
+    );
     return next(new AppError(errorMessage, StatusCodes.BAD_REQUEST));
   }
 
@@ -26,16 +32,24 @@ exports.loginAsParent = catchAsync(async (req, res, next) => {
     },
   });
 
-  if (!student)
+  if (!student) {
+    authLogger.error(
+      req.ip,
+      `${req.method} ${req.originalUrl} | STATUS: ${StatusCodes.BAD_REQUEST} | incorrect parent phone number or code.`
+    );
     return next(
       new AppError(
         "Incorrect parent phone number or code.",
         StatusCodes.BAD_REQUEST
       )
     );
+  }
 
   const user = await db.Users.findOne({ where: { studentId: student.id } });
-
+  authLogger.info(
+    req.ip,
+    `${req.method} ${req.originalUrl} | ${user.name}'s parent login.`
+  );
   Token.sendUser(res, StatusCodes.CREATED, user);
 });
 
@@ -53,6 +67,10 @@ exports.signup = catchAsync(async (req, res, next) => {
 
   const errorMessage = validate(req, authValidator.signup);
   if (errorMessage) {
+    authLogger.error(
+      req.ip,
+      `${req.method} ${req.originalUrl} | STATUS: ${StatusCodes.BAD_REQUEST} | ${errorMessage}`
+    );
     return next(new AppError(errorMessage, StatusCodes.BAD_REQUEST));
   }
 
@@ -83,6 +101,12 @@ exports.signup = catchAsync(async (req, res, next) => {
     },
   });
 
+  authLogger.info(
+    req.ip,
+    `${req.method} ${req.originalUrl} | ${
+      user.name
+    } signup with data: ${JSON.stringify({ id: user.id, name, email, phone })}.`
+  );
   Token.sendUser(res, StatusCodes.CREATED, user);
 });
 
@@ -102,30 +126,48 @@ exports.login = catchAsync(async (req, res, next) => {
       include: ["email", "password", "isSuspended", "phone"],
     },
   });
-  if (!user || !(await user.correctPassword(user.password, password)))
+  if (!user || !(await user.correctPassword(user.password, password))) {
+    authLogger.error(
+      req.ip,
+      `${req.method} ${req.originalUrl} | STATUS: ${StatusCodes.BAD_REQUEST} | Incorrect email or password.`
+    );
     return next(
       new AppError("Incorrect email or password.", StatusCodes.BAD_REQUEST)
     );
+  }
 
-  if (user.isSuspended)
+  if (user.isSuspended) {
+    authLogger.error(
+      req.ip,
+      `${req.method} ${req.originalUrl} | STATUS: ${StatusCodes.UNAUTHORIZED} | User is suspended, please contact the support to active your account.`
+    );
     return next(
       new AppError(
         "User is suspended, please contact the support to active your account.",
         StatusCodes.UNAUTHORIZED
       )
     );
+  }
 
   if (
     user.student &&
     new Date(user.student.subscriptedTill) < new Date(Date.now())
-  )
+  ) {
+    authLogger.error(
+      req.ip,
+      `${req.method} ${req.originalUrl} | STATUS: ${StatusCodes.UNAUTHORIZED} | Student must be subscribe first to access the application.`
+    );
     return next(
       new AppError(
         "Student must be subscribe first to access the application.",
         StatusCodes.UNAUTHORIZED
       )
     );
-
+  }
+  authLogger.info(
+    req.ip,
+    `${req.method} ${req.originalUrl} | ${user.role} ${user.name} login.`
+  );
   Token.sendUser(res, StatusCodes.OK, user);
 });
 
@@ -139,6 +181,10 @@ exports.forgetPassword = catchAsync(async (req, res, next) => {
   const { email } = req.body;
   const errorMessage = validate(req, authValidator.forgetPassword);
   if (errorMessage) {
+    authLogger.error(
+      req.ip,
+      `${req.method} ${req.originalUrl} | STATUS: ${StatusCodes.BAD_REQUEST} | ${errorMessage}`
+    );
     return next(new AppError(errorMessage, StatusCodes.BAD_REQUEST));
   }
 
@@ -148,10 +194,15 @@ exports.forgetPassword = catchAsync(async (req, res, next) => {
       include: ["email"],
     },
   });
-  if (!user)
+  if (!user) {
+    authLogger.error(
+      req.ip,
+      `${req.method} ${req.originalUrl} | STATUS: ${StatusCodes.BAD_REQUEST} | There is no user with this email.`
+    );
     return next(
       new AppError("There is no user with this email.", StatusCodes.BAD_REQUEST)
     );
+  }
 
   const resetToken = user.createPasswordResetToken();
 
@@ -161,7 +212,16 @@ exports.forgetPassword = catchAsync(async (req, res, next) => {
     const URL = `http://${req.hostname}/reset-password?token=${resetToken}`;
 
     await new Email(user, URL).sendPasswordReset();
-
+    authLogger.info(
+      req.ip,
+      `${req.method} ${
+        req.originalUrl
+      } | ${URL} is sent to user: ${JSON.stringify({
+        id: user.id,
+        name: user.name,
+        email: user.email,
+      })}`
+    );
     Sender.send(res, StatusCodes.OK, undefined, {
       message: "Token is sent to your email.",
     });
@@ -171,6 +231,10 @@ exports.forgetPassword = catchAsync(async (req, res, next) => {
     await user.save();
 
     console.log(error);
+    authLogger.error(
+      req.ip,
+      `${req.method} ${req.originalUrl} | STATUS: ${StatusCodes.INTERNAL_SERVER_ERROR} | There was an error sending the email. Try again later`
+    );
     return next(
       new AppError(
         "There was an error sending the email. Try again later",
@@ -192,13 +256,22 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
     },
   });
 
-  if (!user)
+  if (!user) {
+    authLogger.error(
+      req.ip,
+      `${req.method} ${req.originalUrl} | STATUS: ${StatusCodes.BAD_REQUEST} | Token is invalid or has expired.`
+    );
     return next(
       new AppError("Token is invalid or has expired", StatusCodes.BAD_REQUEST)
     );
+  }
 
   const errorMessage = validate(req, authValidator.resetPassword);
   if (errorMessage) {
+    authLogger.error(
+      req.ip,
+      `${req.method} ${req.originalUrl} | STATUS: ${StatusCodes.BAD_REQUEST} | ${errorMessage}`
+    );
     return next(new AppError(errorMessage, StatusCodes.BAD_REQUEST));
   }
   user.password = password;
@@ -206,7 +279,10 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   user.passwordResetExpires = undefined;
 
   await user.save();
-
+  authLogger.info(
+    req.ip,
+    `${req.method} ${req.originalUrl} | ${user.role} ${user.name} reset his password successfully.`
+  );
   Token.sendUser(res, StatusCodes.OK, user);
 });
 
@@ -215,6 +291,10 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
   const errorMessage = validate(req, authValidator.updatePassword);
   if (errorMessage) {
+    authLogger.error(
+      req.ip,
+      `${req.method} ${req.originalUrl} | STATUS: ${StatusCodes.BAD_REQUEST} | ${errorMessage}`
+    );
     return next(new AppError(errorMessage, StatusCodes.BAD_REQUEST));
   }
 
@@ -225,13 +305,21 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
   });
   const isPasswordCorrect = await user.correctPassword(user.password, password);
 
-  if (!isPasswordCorrect)
+  if (!isPasswordCorrect) {
+    authLogger.error(
+      req.ip,
+      `${req.method} ${req.originalUrl} | STATUS: ${StatusCodes.BAD_REQUEST} | The old password is incorrect.`
+    );
     return next(
       new AppError("The old password is incorrect.", StatusCodes.BAD_REQUEST)
     );
+  }
 
   user.password = newPassword;
   await user.save();
-
+  authLogger.info(
+    req.ip,
+    `${req.method} ${req.originalUrl} | ${user.role} ${user.name} update his password successfully.`
+  );
   Token.sendUser(res, StatusCodes.OK, user);
 });

@@ -23,6 +23,7 @@ db.SchoolYears = require("./schoolYearModel")(db);
 db.Departments = require("./departmentModel")(db);
 db.Students = require("./studentModel")(db);
 db.Users = require("./userModel")(db);
+db.UserDeviceTokens = require("./UserDeviceTokenModel")(db);
 db.Subjects = require("./subjectModel")(db);
 db.Teachers = require("./teacherModel")(db);
 db.Sections = require("./sectionModel")(db);
@@ -34,5 +35,8 @@ db.Questions = require("./questionModel")(db);
 db.Grades = require("./gradeModel")(db);
 db.Answers = require("./answerModel")(db);
 db.Subscribes = require("./subscribeModel")(db);
+db.Centers = require("./centerModel")(db);
+db.Advertisements = require("./advertisementModel")(db);
+db.Notes = require("./noteModel")(db);
 
 module.exports = db;

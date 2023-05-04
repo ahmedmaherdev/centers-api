@@ -8,6 +8,9 @@ const Section = require("./sectionRoutes");
 const Exam = require("./examRoutes");
 const Grade = require("./gradeRoutes");
 const Subscribe = require("./subscribeRoutes");
+const Center = require("./centerRoutes");
+const Advertisement = require("./advertisementRoutes");
+const Note = require("./noteRoutes");
 const Upload = require("./uploadRoutes");
 
 module.exports = {
@@ -21,5 +24,8 @@ module.exports = {
   Exam,
   Grade,
   Subscribe,
+  Center,
+  Note,
+  Advertisement,
   Upload,
 };

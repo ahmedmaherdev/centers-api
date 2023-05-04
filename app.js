@@ -72,6 +72,9 @@ app.use("/api/v1/sections", routes.Section);
 app.use("/api/v1/exams", routes.Exam);
 app.use("/api/v1/grades", routes.Grade);
 app.use("/api/v1/subscribes", routes.Subscribe);
+app.use("/api/v1/centers", routes.Center);
+app.use("/api/v1/notes", routes.Note);
+app.use("/api/v1/advertisements", routes.Advertisement);
 app.use("/api/v1/upload", routes.Upload);
 
 app.get("/", (req, res) => {

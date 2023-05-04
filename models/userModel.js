@@ -35,7 +35,6 @@ module.exports = (db) => {
             if (!isMobilePhone(value, "ar-EG"))
               throw new Error("invalid phone number.");
           },
-          len: [10, 200],
         },
       },
 

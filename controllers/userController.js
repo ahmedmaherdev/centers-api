@@ -126,3 +126,15 @@ exports.updateMeAsStudentMiddleware = async (req, res, next) => {
 };
 
 exports.updateMeAsStudent = factoryHandler.updateOne(db.Students);
+
+exports.addMydeviceTokenMiddleware = (req, res, next) => {
+  const { id: userId } = req.user;
+  const { deviceToken } = req.body;
+
+  req.body = {
+    userId,
+    deviceToken,
+  };
+  next();
+};
+exports.addMydeviceToken = factoryHandler.createOne(db.UserDeviceTokens);

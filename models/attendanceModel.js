@@ -1,6 +1,6 @@
 const { DataTypes, fn, col } = require("sequelize");
 const moment = require("moment");
-const { maxAllowedAbsence } = require("../config");
+const config = require("../config");
 
 const calcStudentAttendances = async function (Attendance, attendance) {
   const presence = await Attendance.count({
@@ -17,8 +17,9 @@ const calcStudentAttendances = async function (Attendance, attendance) {
     },
   });
 
-  if (absence >= maxAllowedAbsence) user.isSuspended = true;
-  user = await db.Users.findByPk(attendance.studentId);
+  const user = await db.Users.findByPk(attendance.studentId);
+
+  if (absence >= user.student.maxAllowedAbsence) user.isSuspended = true;
 
   user.student.presence = presence;
   user.student.absence = absence;

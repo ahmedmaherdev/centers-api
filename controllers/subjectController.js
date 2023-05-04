@@ -69,6 +69,13 @@ exports.updateSubject = factoryHandler.updateOne(db.Subjects);
 exports.deleteSubject = factoryHandler.deleteOne(db.Subjects);
 
 exports.addMySubjects = catchAsync(async (req, res, next) => {
+  const result = subjectValidator.addMySubjects.validate(req.body);
+  if (result.error) {
+    return next(
+      new AppError(result.error.details[0].message, StatusCodes.BAD_REQUEST)
+    );
+  }
+
   let subjects = req.body.subjects;
   const { id: userId, departmentId: userDepartmentId } = req.user;
 
@@ -78,18 +85,31 @@ exports.addMySubjects = catchAsync(async (req, res, next) => {
     );
 
   let studentSubjects = [];
-  for (let sub of subjects) {
-    const subject = await db.Subjects.findByPk(sub);
-    if (
-      subject &&
-      subject.departments.some((dep) => dep.id === userDepartmentId)
-    ) {
+  const subjectsData = await db.Subjects.findAll({
+    where: {
+      id: {
+        [Op.in]: literal(
+          `(SELECT subjectId FROM ${db.SubjectDepartments.tableName} WHERE departmentId = ${userDepartmentId})`
+        ),
+      },
+    },
+  });
+
+  subjects.forEach((subjectId) => {
+    let subject = subjectsData.find((sub) => sub.id === subjectId);
+    if (subject) {
       studentSubjects.push({
+        subjectId,
         studentId: userId,
-        subjectId: subject.id,
         sections: subject.sections,
       });
     }
+  });
+
+  if (studentSubjects.length > 0) {
+    await db.StudentSubjects.destroy({
+      where: { studentId: userId },
+    });
   }
 
   const StudentSubjects = await db.StudentSubjects.bulkCreate(studentSubjects);
