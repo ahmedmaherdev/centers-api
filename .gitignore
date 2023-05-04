@@ -4,4 +4,3 @@ node_modules
 localScript.js
 data
 logs
-config/serviceAccount.json
