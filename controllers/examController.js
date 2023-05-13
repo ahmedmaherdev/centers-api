@@ -69,7 +69,6 @@ exports.createExamNotification = async (req, res, next) => {
       },
       attributes: ["id", "name"],
     });
-    console.log(students);
     for (const student of students) {
       let userDeviceTokens = await db.UserDeviceTokens.findAll({
         where: { userId: student.id },
