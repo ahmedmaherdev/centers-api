@@ -30,7 +30,9 @@ router.use(restrictTo("admin"));
 router
   .route("/")
   .get(users.getAllUsers)
-  .post(users.createUserMiddleware, users.createUser);
+  .post(users.createUserMiddleware, users.createUser)
+  .patch(users.suspendUser);
+
 router.get("/search", users.searchUser);
 router
   .route("/:id")

@@ -101,9 +101,11 @@ exports.createOne = (Model, Logger) =>
       [modelName]: data,
     });
 
-    // pass created object to send notification
-    req.createdData = data;
-    next();
+    if (req.isHasNotification) {
+      // pass created object to send notification
+      req.createdData = data;
+      next();
+    }
   });
 
 exports.updateOne = (Model, Logger) =>

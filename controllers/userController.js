@@ -5,6 +5,9 @@ const AppError = require("../utils/appError");
 const { StatusCodes } = require("http-status-codes");
 const userValidator = require("../validators/userValidator");
 const stringToNumber = require("../utils/stringToNumber");
+const catchAsync = require("../utils/catchAsync");
+const config = require("../config");
+const Sender = require("../utils/Sender");
 
 exports.getAllUsers = factoryHandler.getAll(db.Users);
 
@@ -38,6 +41,29 @@ exports.updateUserMiddleware = (req, res, next) => {
 exports.updateUser = factoryHandler.updateOne(db.Users);
 
 exports.deleteUser = factoryHandler.deleteOne(db.Users);
+
+exports.suspendUser = catchAsync(async (req, res, next) => {
+  const { isSuspended, userId } = req.body;
+  const user = await db.Users.findByPk(userId);
+  if (!user) {
+    return next(new AppError(`User is not found.`, StatusCodes.NOT_FOUND));
+  }
+  // check is the user is student and will be active his account
+  if (isSuspended === false && user.role === "student") {
+    // check if student is suspended because his absence
+    user.student.maxAllowedAbsence =
+      user.student.absence >= user.student.maxAllowedAbsence
+        ? user.student.maxAllowedAbsence + config.maxAllowedAbsence
+        : user.student.maxAllowedAbsence;
+    await user.student.save();
+  }
+  user.isSuspended = isSuspended;
+  await user.save();
+
+  Sender.send(res, StatusCodes.OK, undefined, {
+    message: `${user.role} ${user.name} suspend status changed successfully.`,
+  });
+});
 
 exports.searchUser = factoryHandler.search(db.Users);
 

@@ -40,6 +40,7 @@ exports.createExamMiddleware = (req, res, next) => {
   }
 
   req.body.createdById = req.user.id;
+  req.isHasNotification = true;
   next();
 };
 exports.createExam = factoryHandler.createOne(db.Exams, examLogger);
