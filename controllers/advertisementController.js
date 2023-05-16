@@ -28,6 +28,8 @@ exports.createAdvertisementMiddleware = (req, res, next) => {
       new AppError(result.error.details[0].message, StatusCodes.BAD_REQUEST)
     );
   }
+
+  req.isHasNotification = true;
   next();
 };
 exports.createAdvertisement = factoryHandler.createOne(

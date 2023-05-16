@@ -18,6 +18,7 @@ exports.createSubscribeMiddleware = (req, res, next) => {
     studentId,
     createdById: userId,
   };
+  req.isHasNotification = true;
   next();
 };
 

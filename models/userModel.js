@@ -80,6 +80,11 @@ module.exports = (db) => {
     {
       hooks: {
         beforeSave: async function (user, options) {
+          const isSuspendedFound = user._changed.has("isSuspended");
+          if (isSuspendedFound && user.isNewRecord) {
+            return;
+          }
+
           if (user.password) {
             user.password = await bcrypt.hash(user.password, 12);
           }
