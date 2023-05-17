@@ -13,25 +13,17 @@ module.exports = (db) => {
   });
 
   Message.belongsTo(db.Users, {
-    as: "from",
-    foreignKey: {
-      name: "fromId",
-      allowNull: true,
-    },
-  });
-
-  Message.belongsTo(db.Users, {
-    as: "to",
-    foreignKey: {
-      name: "toId",
-      allowNull: true,
-    },
-  });
-
-  Message.belongsTo(db.Users, {
     as: "createdBy",
     foreignKey: {
       name: "createdById",
+      allowNull: false,
+    },
+  });
+
+  Message.belongsTo(db.Rooms, {
+    as: "room",
+    foreignKey: {
+      name: "roomId",
       allowNull: false,
     },
   });

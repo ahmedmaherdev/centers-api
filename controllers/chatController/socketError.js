@@ -4,6 +4,7 @@ class SocketError extends Error {
     this.data = {
       statusCode: statusCode,
       status: `${statusCode}`.startsWith("4") ? "fail" : "error",
+      message,
     };
     Error.captureStackTrace(this, this.constructor);
   }
