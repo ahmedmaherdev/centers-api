@@ -2,6 +2,10 @@ const { DataTypes } = require("sequelize");
 
 module.exports = (db) => {
   const Message = db.define("Message", {
+    sender: {
+      type: DataTypes.ENUM("center", "student"),
+      allowNull: false,
+    },
     content: {
       type: DataTypes.STRING,
       allowNull: false,

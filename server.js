@@ -1,7 +1,15 @@
 const app = require("./app");
 const dotenv = require("dotenv");
 const { cloudinaryConfig } = require("./utils/cloudinary");
+const { Server } = require("socket.io");
+const http = require("http");
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: "*",
+});
 const db = require("./models");
+const chatController = require("./controllers/chatController")(io);
+
 dotenv.config();
 
 process.on("uncaughtException", (err) => {
@@ -16,10 +24,12 @@ db.sync({})
   .catch((err) => console.error(err));
 cloudinaryConfig();
 
+// io
+io.use(chatController.protect);
+io.on("connection", chatController.connection);
+
 const PORT = process.env.PORT ?? 3000;
-const server = app.listen(PORT, () =>
-  console.log(`Server is listening on port: ${PORT}`)
-);
+server.listen(PORT, () => console.log(`Server is listening on port: ${PORT}`));
 
 // execute tasks
 require("./utils/tasks");
