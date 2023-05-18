@@ -8,7 +8,7 @@ const io = new Server(server, {
   cors: "*",
 });
 const db = require("./models");
-const chatController = require("./controllers/chatController")(io);
+const chatController = require("./controllers/socketIOController")(io);
 
 dotenv.config();
 
