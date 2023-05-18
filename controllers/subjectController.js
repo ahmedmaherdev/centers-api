@@ -42,7 +42,7 @@ exports.createSubject = catchAsync(async (req, res, next) => {
   const { name, schoolYearId, sections, departments } = req.body;
 
   const createdDepartments = await db.Departments.findAll({
-    where: { id: departments },
+    where: { id: departments, schoolYearId },
   });
 
   const subject = await db.Subjects.create({
@@ -64,7 +64,25 @@ exports.updateSubjectMiddleware = async (req, res, next) => {
   }
   next();
 };
-exports.updateSubject = factoryHandler.updateOne(db.Subjects);
+// exports.updateSubject = factoryHandler.updateOne(db.Subjects);
+
+exports.updateSubject = catchAsync(async (req, res, next) => {
+  const { name, schoolYearId, sections, departments } = req.body;
+  const subject = await db.Subjects.findByPk(req.params.id);
+  subject.name = name ?? subject.name;
+  subject.schoolYearId = schoolYearId ?? subject.schoolYearId;
+  subject.sections = sections ?? subject.sections;
+  if (departments) {
+    const createdDepartments = await db.Departments.findAll({
+      where: { id: departments, schoolYearId },
+    });
+    await subject.setDepartments(createdDepartments);
+  }
+
+  await subject.save();
+
+  Sender.send(res, StatusCodes.OK, subject);
+});
 
 exports.deleteSubject = factoryHandler.deleteOne(db.Subjects);
 

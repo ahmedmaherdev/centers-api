@@ -38,5 +38,7 @@ db.Subscribes = require("./subscribeModel")(db);
 db.Centers = require("./centerModel")(db);
 db.Advertisements = require("./advertisementModel")(db);
 db.Notes = require("./noteModel")(db);
+db.Rooms = require("./chat/roomModel")(db);
+db.Messages = require("./chat/messageModel")(db);
 
 module.exports = db;
