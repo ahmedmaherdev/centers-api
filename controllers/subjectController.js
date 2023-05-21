@@ -45,13 +45,14 @@ exports.createSubject = catchAsync(async (req, res, next) => {
     where: { id: departments, schoolYearId },
   });
 
-  const subject = await db.Subjects.create({
+  let subject = await db.Subjects.create({
     name,
     schoolYearId,
     sections,
   });
   await subject.setDepartments(createdDepartments);
 
+  subject = await db.Subjects.findByPk(subject.id);
   Sender.send(res, StatusCodes.CREATED, subject);
 });
 
@@ -68,19 +69,22 @@ exports.updateSubjectMiddleware = async (req, res, next) => {
 
 exports.updateSubject = catchAsync(async (req, res, next) => {
   const { name, schoolYearId, sections, departments } = req.body;
-  const subject = await db.Subjects.findByPk(req.params.id);
+  let subject = await db.Subjects.findByPk(req.params.id);
+
   subject.name = name ?? subject.name;
   subject.schoolYearId = schoolYearId ?? subject.schoolYearId;
   subject.sections = sections ?? subject.sections;
+
   if (departments) {
     const createdDepartments = await db.Departments.findAll({
-      where: { id: departments, schoolYearId },
+      where: { id: departments, schoolYearId: subject.schoolYearId },
     });
     await subject.setDepartments(createdDepartments);
   }
 
   await subject.save();
 
+  subject = await db.Subjects.findByPk(subject.id);
   Sender.send(res, StatusCodes.OK, subject);
 });
 
