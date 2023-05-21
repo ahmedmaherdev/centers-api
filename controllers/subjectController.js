@@ -41,14 +41,14 @@ exports.createSubjectMiddleware = (req, res, next) => {
 exports.createSubject = catchAsync(async (req, res, next) => {
   const { name, schoolYearId, sections, departments } = req.body;
 
-  const createdDepartments = await db.Departments.findAll({
-    where: { id: departments, schoolYearId },
-  });
-
   let subject = await db.Subjects.create({
     name,
     schoolYearId,
     sections,
+  });
+
+  const createdDepartments = await db.Departments.findAll({
+    where: { id: departments, schoolYearId: subject.schoolYearId },
   });
   await subject.setDepartments(createdDepartments);
 
