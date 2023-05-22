@@ -43,7 +43,7 @@ class APIFeatures {
 
   paginate() {
     const page = this.queryString.page * 1 || 1;
-    const limit = this.queryString.limit * 1 || 10;
+    let limit = this.queryString.limit * 1 || 10;
     const offset = (page - 1) * limit;
     if (limit > 10 || limit < 1) {
       limit = 10;
