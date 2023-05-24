@@ -88,8 +88,7 @@ module.exports = (db) => {
           if (user.password) {
             user.password = await bcrypt.hash(user.password, 12);
           }
-
-          if (user.phone.startsWith("2")) {
+          if (user.phone && user.phone.startsWith("2")) {
             user.phone = user.phone.slice(1);
           }
         },
@@ -154,7 +153,7 @@ module.exports = (db) => {
     return resetToken;
   };
 
-  User.searchedAttributes = ["name"];
+  User.searchedAttributes = [`${User.name}.name`];
 
   User.belongsTo(db.Students, {
     as: "student",
