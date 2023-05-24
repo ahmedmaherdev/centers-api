@@ -300,7 +300,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
 
   const user = await db.Users.findByPk(req.user.id, {
     attributes: {
-      include: ["password"],
+      include: ["email", "phone", "password"],
     },
   });
   const isPasswordCorrect = await user.correctPassword(user.password, password);
