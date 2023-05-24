@@ -81,7 +81,7 @@ module.exports = (db) => {
       hooks: {
         beforeSave: async function (user, options) {
           const isSuspendedFound = user._changed.has("isSuspended");
-          if (isSuspendedFound && user.isNewRecord) {
+          if (isSuspendedFound && !user.isNewRecord) {
             return;
           }
 
