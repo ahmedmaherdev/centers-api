@@ -17,6 +17,11 @@ module.exports = (db) => {
             as: "student",
             model: db.Users,
             attributes: ["id", "name", "photo", "role"],
+            include: {
+              as: "student",
+              model: db.Students,
+              attributes: [],
+            },
           },
           {
             as: "createdBy",
