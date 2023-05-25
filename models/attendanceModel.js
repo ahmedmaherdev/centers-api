@@ -2,33 +2,33 @@ const { DataTypes, fn, col } = require("sequelize");
 const moment = require("moment");
 const config = require("../config");
 
-const calcStudentAttendances = async function (Attendance, attendance) {
-  const presence = await Attendance.count({
-    where: {
-      studentId: attendance.studentId,
-      status: "presence",
-    },
-  });
-
-  const absence = await Attendance.count({
-    where: {
-      studentId: attendance.studentId,
-      status: "absence",
-    },
-  });
-
-  const user = await db.Users.findByPk(attendance.studentId);
-
-  if (absence >= user.student.maxAllowedAbsence) user.isSuspended = true;
-
-  user.student.presence = presence;
-  user.student.absence = absence;
-
-  await user.save();
-  await user.student.save();
-};
-
 module.exports = (db) => {
+  const calcStudentAttendances = async function (Attendance, attendance) {
+    const presence = await Attendance.count({
+      where: {
+        studentId: attendance.studentId,
+        status: "presence",
+      },
+    });
+
+    const absence = await Attendance.count({
+      where: {
+        studentId: attendance.studentId,
+        status: "absence",
+      },
+    });
+
+    const user = await db.Users.findByPk(attendance.studentId);
+
+    if (absence >= user.student.maxAllowedAbsence) user.isSuspended = true;
+
+    user.student.presence = presence;
+    user.student.absence = absence;
+
+    await user.save();
+    await user.student.save();
+  };
+
   const Attendance = db.define(
     "Attendance",
     {
@@ -65,6 +65,12 @@ module.exports = (db) => {
           {
             as: "student",
             model: db.Users,
+            attributes: ["id", "name", "photo", "role"],
+            include: {
+              as: "student",
+              model: db.Students,
+              attributes: [],
+            },
           },
         ],
       },
