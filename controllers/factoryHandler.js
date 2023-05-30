@@ -122,7 +122,7 @@ exports.updateOne = (Model, Logger) =>
       where: { id },
     });
 
-    data = await Model.findByPk(id);
+    data = await Model.findByPk(id, req.includedObj);
     const modelName = Model.name.toLowerCase();
     if (!data) {
       if (Logger)

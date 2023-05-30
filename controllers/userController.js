@@ -90,6 +90,11 @@ exports.updateMeMiddleware = async (req, res, next) => {
   }
 
   req.params.id = req.user.id;
+  req.includedObj = {
+    attributes: {
+      include: ["email", "phone"],
+    },
+  };
   req.body = {
     name,
     email,
