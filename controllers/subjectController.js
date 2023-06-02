@@ -91,6 +91,7 @@ exports.updateSubject = catchAsync(async (req, res, next) => {
 exports.deleteSubject = factoryHandler.deleteOne(db.Subjects);
 
 exports.addMySubjects = catchAsync(async (req, res, next) => {
+  // validate the subject input
   const result = subjectValidator.addMySubjects.validate(req.body);
   if (result.error) {
     return next(
@@ -101,31 +102,37 @@ exports.addMySubjects = catchAsync(async (req, res, next) => {
   let subjects = req.body.subjects;
   const { id: userId, departmentId: userDepartmentId } = req.user;
 
+  // validate the length of subjects
   if (subjects.length === 0)
     return next(
       new AppError("please, provide your subjects", StatusCodes.BAD_REQUEST)
     );
 
-  let studentSubjects = [];
+  // get the subjects
   const subjectsData = await db.Subjects.findAll({
     where: {
-      id: {
-        [Op.in]: literal(
-          `(SELECT subjectId FROM ${db.SubjectDepartments.tableName} WHERE departmentId = ${userDepartmentId})`
-        ),
-      },
+      [Op.and]: [
+        {
+          id: subjects,
+        },
+        {
+          id: {
+            [Op.in]: literal(
+              `(SELECT subjectId FROM ${db.SubjectDepartments.tableName} WHERE departmentId = ${userDepartmentId})`
+            ),
+          },
+        },
+      ],
     },
   });
 
-  subjects.forEach((subjectId) => {
-    let subject = subjectsData.find((sub) => sub.id === subjectId);
-    if (subject) {
-      studentSubjects.push({
-        subjectId,
-        studentId: userId,
-        sections: subject.sections,
-      });
-    }
+  // create subjects for student
+  let studentSubjects = subjectsData.map((sub) => {
+    return {
+      subjectId: sub.id,
+      studentId: userId,
+      sections: sub.sections,
+    };
   });
 
   if (studentSubjects.length > 0) {
@@ -134,8 +141,8 @@ exports.addMySubjects = catchAsync(async (req, res, next) => {
     });
   }
 
-  const StudentSubjects = await db.StudentSubjects.bulkCreate(studentSubjects);
-  Sender.send(res, StatusCodes.OK, StudentSubjects);
+  studentSubjects = await db.StudentSubjects.bulkCreate(studentSubjects);
+  Sender.send(res, StatusCodes.OK, { subjects: studentSubjects });
 });
 
 exports.getMySubjects = catchAsync(async (req, res, next) => {

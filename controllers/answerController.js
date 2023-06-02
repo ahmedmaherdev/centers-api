@@ -57,11 +57,12 @@ exports.createAnswers = catchAsync(async (req, res, next) => {
   examAnswers.forEach((question) => {
     // find student answer
     let studentAnswer = studentAnswers.find(
-      (ans) => ans.questionId === question.id && ans.answer === question.answer
+      (ans) => ans.questionId === question.id
     );
-
+    // && ans.answer === question.answer
     // if student answer found then correct answer else wrong answer
-    studentAnswer ? studentGrade.correct++ : studentGrade.wrong++;
+    const isCorrect = studentAnswer && studentAnswer.answer === question.answer;
+    isCorrect ? studentGrade.correct++ : studentGrade.wrong++;
 
     // push answer to createdAnswers
     createdAnswers.push({
