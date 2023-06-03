@@ -29,7 +29,6 @@ exports.createAttendanceMiddleware = async (req, res, next) => {
         subjectId: subject.id,
       },
     });
-    console.log(subject);
 
     if (!studentSubject)
       return next(
