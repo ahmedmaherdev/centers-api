@@ -151,7 +151,7 @@ exports.login = catchAsync(async (req, res, next) => {
 
   if (
     user.student &&
-    new Date(user.student.subscriptedTill) < new Date(Date.now())
+    new Date(user.student.subscribedTill) < new Date(Date.now())
   ) {
     authLogger.error(
       req.ip,
