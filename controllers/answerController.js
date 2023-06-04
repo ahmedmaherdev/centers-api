@@ -34,10 +34,12 @@ exports.createAnswers = catchAsync(async (req, res, next) => {
   const { id: examId } = req.exam;
   const { answers: studentAnswers } = req.body;
 
+  // validate the input
   const errorMessage = validate(req, answerValidator.createAnswers);
   if (errorMessage)
     return next(new AppError(errorMessage, StatusCodes.BAD_REQUEST));
 
+  // get the exam answers
   const examAnswers = await db.Questions.findAll({
     where: {
       examId,
@@ -45,6 +47,7 @@ exports.createAnswers = catchAsync(async (req, res, next) => {
     attributes: ["id", "answer"],
   });
 
+  // init new grade
   const studentGrade = new db.Grades({
     total: examAnswers.length,
     correct: 0,
@@ -59,8 +62,7 @@ exports.createAnswers = catchAsync(async (req, res, next) => {
     let studentAnswer = studentAnswers.find(
       (ans) => ans.questionId === question.id
     );
-    // && ans.answer === question.answer
-    // if student answer found then correct answer else wrong answer
+
     const isCorrect = studentAnswer && studentAnswer.answer === question.answer;
     isCorrect ? studentGrade.correct++ : studentGrade.wrong++;
 
