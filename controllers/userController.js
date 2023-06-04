@@ -9,6 +9,20 @@ const catchAsync = require("../utils/catchAsync");
 const config = require("../config");
 const Sender = require("../utils/Sender");
 
+exports.getAllUsersMiddleware = (req, res, next) => {
+  const { role: userRole } = req.user;
+
+  if (userRole === "admin") {
+    req.includedObj = {
+      attributes: {
+        include: ["email", "phone", "isSuspended"],
+      },
+    };
+  }
+
+  next();
+};
+
 exports.getAllUsers = factoryHandler.getAll(db.Users);
 
 exports.getUser = factoryHandler.getOne(db.Users);
@@ -65,13 +79,27 @@ exports.suspendUser = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.searchUserMiddleware = (req, res, next) => {
+  const { role: userRole } = req.user;
+
+  if (userRole === "admin") {
+    req.includedObj = {
+      attributes: {
+        include: ["email", "phone", "isSuspended"],
+      },
+    };
+  }
+
+  next();
+};
+
 exports.searchUser = factoryHandler.search(db.Users);
 
 exports.getMeMiddleware = (req, res, next) => {
   req.params.id = req.user.id;
   req.includedObj = {
     attributes: {
-      include: ["email", "phone"],
+      include: ["email", "phone", "isSuspended"],
     },
   };
   next();

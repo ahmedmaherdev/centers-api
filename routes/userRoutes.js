@@ -29,11 +29,11 @@ router.patch(
 router.use(restrictTo("admin"));
 router
   .route("/")
-  .get(users.getAllUsers)
+  .get(users.getAllUsersMiddleware, users.getAllUsers)
   .post(users.createUserMiddleware, users.createUser)
   .patch(users.suspendUser);
 
-router.get("/search", users.searchUser);
+router.get("/search", users.searchUserMiddleware, users.searchUser);
 router
   .route("/:id")
   .get(users.getUser)

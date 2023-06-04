@@ -33,15 +33,9 @@ exports.getAll = (Model, Logger) =>
       ...featuresBeforePagination.query,
     });
 
-    // for admin in get users
-    if (tableName === "users" && req.user?.role === "admin") {
-      features.query.attributes = {
-        include: ["email", "phone", "isSuspended"],
-      };
-    }
-
     const data = await Model.findAll({
       ...features.query,
+      ...req.includedObj,
     });
 
     // logging data
@@ -187,6 +181,8 @@ exports.search = (Model) =>
       ),
 
       limit: 10,
+
+      ...req.includedObj,
     });
     const tableName = Model.tableName.toLowerCase();
 
