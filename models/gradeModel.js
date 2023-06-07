@@ -1,4 +1,4 @@
-const { DataTypes } = require("sequelize");
+const { DataTypes, fn, col } = require("sequelize");
 
 module.exports = (db) => {
   const Grade = db.define(
@@ -44,11 +44,21 @@ module.exports = (db) => {
           });
 
           const passExams = await Grade.count({
-            where: { isPassed: true },
+            where: { isPassed: true, studentId: studentData.id },
           });
 
+          const studentPoints = await Grade.findOne({
+            where: {
+              studentId: studentData.id,
+            },
+
+            attributes: [[fn("sum", col("correct")), "totalCorrect"]],
+          });
+
+          const points = studentPoints.dataValues?.totalCorrect ?? 0;
           studentData.student.allExams = totalExams;
           studentData.student.passExams = passExams;
+          studentData.student.points = points;
           await studentData.student.save();
         },
       },
