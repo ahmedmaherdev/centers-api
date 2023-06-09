@@ -1,26 +1,36 @@
 const { DataTypes } = require("sequelize");
 
 module.exports = (db) => {
-  const Game = db.define("Game", {
-    name: {
-      type: DataTypes.STRING,
-      allowNull: false,
+  const Game = db.define(
+    "Game",
+    {
+      name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
+      questionsCount: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+      },
+      studentsCount: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+      },
+      period: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+      },
+      startedAt: DataTypes.DATE,
+      endedAt: DataTypes.DATE,
     },
-    questionsCount: {
-      type: DataTypes.INTEGER,
-      defaultValue: 0,
-    },
-    studentsCount: {
-      type: DataTypes.INTEGER,
-      defaultValue: 0,
-    },
-    period: {
-      type: DataTypes.INTEGER,
-      defaultValue: 0,
-    },
-    startedAt: DataTypes.DATE,
-    endedAt: DataTypes.DATE,
-  });
+    {
+      defaultScope: {
+        as: "department",
+        model: db.departments,
+        attributes: ["id", "name"],
+      },
+    }
+  );
 
   Game.belongsTo(db.Users, {
     as: "createdBy",

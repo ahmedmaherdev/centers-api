@@ -11,6 +11,7 @@ const Subscribe = require("./subscribeRoutes");
 const Center = require("./centerRoutes");
 const Advertisement = require("./advertisementRoutes");
 const Note = require("./noteRoutes");
+const Game = require("./gameRoutes");
 const Room = require("./roomRoutes");
 const Upload = require("./uploadRoutes");
 
@@ -28,6 +29,7 @@ module.exports = {
   Center,
   Note,
   Advertisement,
+  Game,
   Room,
   Upload,
 };
