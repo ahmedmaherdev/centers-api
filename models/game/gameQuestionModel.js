@@ -1,4 +1,4 @@
-const { DataTypes } = require("sequelize");
+const { DataTypes, fn, col } = require("sequelize");
 
 module.exports = (db) => {
   const calcGameQuestions = async (gameQuestion, GameQuestion) => {
@@ -9,9 +9,18 @@ module.exports = (db) => {
       where: { gameId },
     });
 
+    const gameQuestionsPeriod = await GameQuestion.findOne({
+      where: {
+        gameId,
+      },
+
+      attributes: [[fn("SUM", col("period")), "totalPeriod"]],
+    });
+
     await db.Games.update(
       {
         questionsCount: gameQuestionsCount,
+        period: gameQuestionsPeriod.dataValues?.totalPeriod ?? 0,
       },
       {
         where: { id: gameId },

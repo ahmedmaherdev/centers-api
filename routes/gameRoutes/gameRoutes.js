@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const games = require("../controllers/gameController");
-const restrictTo = require("../utils/restrictTo");
-const protect = require("../controllers/authController/protect");
+const games = require("../../controllers/gameController");
+const restrictTo = require("../../utils/restrictTo");
+const protect = require("../../controllers/authController/protect");
 const questions = require("./gameQuestionRoutes");
 
 router.use("/:examId/questions", questions);

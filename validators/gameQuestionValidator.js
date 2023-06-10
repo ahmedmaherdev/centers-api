@@ -34,3 +34,8 @@ exports.updateGameQuestion = joi.object({
     .min(5 * 60)
     .max(2 * 60 * 60), // min 5 mins and max 2 hours
 });
+
+exports.gameAnswer = joi.object({
+  answer: joi.string().valid("A", "B", "C", "D").required(),
+  questionId: joi.number().integer().required(),
+});

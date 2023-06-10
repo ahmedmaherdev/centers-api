@@ -6,7 +6,49 @@ const gameValidator = require("../validators/gameValidator");
 const validate = require("../utils/validate");
 const catchAsync = require("../utils/catchAsync");
 const Logger = require("../utils/Logger");
+const { fn, col } = require("sequelize");
+const Sender = require("../utils/Sender");
 const gameLogger = new Logger("game");
+
+exports.getBestTenStudents = catchAsync(async (req, res, next) => {
+  if (req.query.gameId) {
+    return next(
+      new AppError(
+        "Please , provide game id in the query string.",
+        StatusCodes.BAD_REQUEST
+      )
+    );
+  }
+  const { gameId } = req.query;
+  const students = await db.GameAnswers.findAll({
+    where: { gameId },
+    include: {
+      as: "student",
+      model: db.Users,
+      attributes: ["id", "name", "photo", "role"],
+      include: {
+        as: "student",
+        model: db.Students,
+        attributes: [],
+      },
+    },
+    attributes: ["studentId", [fn("SUM", col("points")), "totalPoints"]],
+    group: ["studentId"],
+    order: [["totalPoints", "DESC"]],
+    limit: 10,
+  });
+
+  Sender.send(
+    res,
+    StatusCodes.OK,
+    {
+      students,
+    },
+    {
+      count: students.length,
+    }
+  );
+});
 
 exports.getAllGamesMiddleware = (req, res, next) => {
   const { role: userRole, id: userId } = req.user;
