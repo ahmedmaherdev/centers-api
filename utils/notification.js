@@ -19,10 +19,10 @@ class Notification {
         body: `You have a new ${this.data.type}`,
       },
       data: { data: JSON.stringify(this.data) },
-      // token: this.deviceTokens[0],
-      topic: `${this.data.type}-1`,
+      token: this.deviceTokens,
+      // topic: `${this.data.type}-1`,
     };
-    return await admin.messaging().send(message);
+    return await admin.messaging().sendMulticast(message);
   }
 }
 
