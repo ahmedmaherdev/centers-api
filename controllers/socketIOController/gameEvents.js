@@ -46,6 +46,8 @@ exports.startGame = (io, socket) => {
 
       for (let question of gameQuestions) {
         io.to(socket.gameName).emit("newQuestion", question);
+        question.sendedAt = moment(Date.now());
+        await question.save();
         await sleep(question.period * 1000);
       }
 

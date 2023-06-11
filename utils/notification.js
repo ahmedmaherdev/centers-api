@@ -1,6 +1,6 @@
-var admin = require("firebase-admin");
+const admin = require("firebase-admin");
 
-var serviceAccount = require("../config/serviceAccount.json");
+const serviceAccount = require("../config/serviceAccount.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -19,9 +19,10 @@ class Notification {
         body: `You have a new ${this.data.type}`,
       },
       data: { data: JSON.stringify(this.data) },
-      tokens: this.deviceTokens,
+      // token: this.deviceTokens[0],
+      topic: `${this.data.type}-1`,
     };
-    return await admin.messaging().sendMulticast(message);
+    return await admin.messaging().send(message);
   }
 }
 

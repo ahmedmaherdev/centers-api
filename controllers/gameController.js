@@ -3,6 +3,7 @@ const db = require("../models");
 const factoryHandler = require("./factoryHandler");
 const AppError = require("../utils/appError");
 const gameValidator = require("../validators/gameValidator");
+const gameQuestionsValidator = require("../validators/gameQuestionValidator");
 const validate = require("../utils/validate");
 const catchAsync = require("../utils/catchAsync");
 const Logger = require("../utils/Logger");
@@ -93,6 +94,52 @@ exports.updateGameMiddleware = (req, res, next) => {
 exports.updateGame = factoryHandler.updateOne(db.Games, gameLogger);
 
 exports.deleteGame = factoryHandler.deleteOne(db.Games, gameLogger);
+
+exports.createGameAnswer = catchAsync(async (req, res, next) => {
+  const { id: userId } = req.user;
+  const { id: gameId } = req.game;
+  const errorMessage = validate(req, gameQuestionsValidator.gameAnswer);
+  if (errorMessage) {
+    gameLogger.error(
+      req.ip,
+      `${req.method} ${req.originalUrl} | STATUS: ${StatusCodes.BAD_REQUEST} | ${errorMessage}`
+    );
+    return next(new AppError(errorMessage, StatusCodes.BAD_REQUEST));
+  }
+
+  const gameQuestion = await db.GameQuestions.findOne({
+    where: {
+      gameId,
+      questionId,
+      answer,
+    },
+  });
+
+  // if the correct answer
+  let points = 0;
+  if (gameQuestion) {
+    // clac the points for student (endedAt (startedAt) - now)
+    const endedAt = moment(gameQuestion.sendedAt).add(
+      gameQuestion.period,
+      "second"
+    );
+    const now = moment(Date.now());
+    const diff = endedAt.diff(now, "second");
+    points = diff > 0 ? Math.ceil((diff / gameQuestion.period) * 100) : 0;
+  }
+
+  await db.GameAnswers.create({
+    gameId: socket.game.id,
+    questionId,
+    answer,
+    studentId: userId,
+    points,
+  });
+
+  Sender.send(res, StatusCodes.CREATED, undefined, {
+    message: "Question is created Successfully.",
+  });
+});
 
 exports.checkGameMiddleware = catchAsync(async (req, res, next) => {
   const { gameId } = req.params;
