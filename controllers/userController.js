@@ -189,12 +189,19 @@ exports.updateMeAsStudent = factoryHandler.updateOne(db.Students);
 exports.addMydeviceToken = catchAsync(async (req, res, next) => {
   const { id: userId } = req.user;
   const { deviceToken } = req.body;
-  const userDeviceToken = await db.UserDeviceTokens.findOne({
+  let userDeviceToken = await db.UserDeviceTokens.findOne({
     where: { userId },
   });
 
-  userDeviceToken.deviceToken = deviceToken;
-  await userDeviceToken.save();
+  if (!userDeviceToken) {
+    userDeviceToken = await db.UserDeviceTokens.create({
+      userId,
+      deviceToken,
+    });
+  } else {
+    userDeviceToken.deviceToken = deviceToken;
+    await userDeviceToken.save();
+  }
 
   Sender.send(res, StatusCodes.CREATED, {
     userDeviceToken,
