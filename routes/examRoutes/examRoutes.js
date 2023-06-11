@@ -1,8 +1,8 @@
 const express = require("express");
 const router = express.Router();
-const exams = require("../controllers/examController");
-const restrictTo = require("../utils/restrictTo");
-const protect = require("../controllers/authController/protect");
+const exams = require("../../controllers/examController");
+const restrictTo = require("../../utils/restrictTo");
+const protect = require("../../controllers/authController/protect");
 const questions = require("./questionRoutes");
 const answers = require("./answerRoutes");
 

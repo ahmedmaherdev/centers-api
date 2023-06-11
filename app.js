@@ -75,6 +75,7 @@ app.use("/api/v1/subscribes", routes.Subscribe);
 app.use("/api/v1/centers", routes.Center);
 app.use("/api/v1/notes", routes.Note);
 app.use("/api/v1/advertisements", routes.Advertisement);
+app.use("/api/v1/games", routes.Game);
 app.use("/api/v1/rooms", routes.Room);
 app.use("/api/v1/upload", routes.Upload);
 

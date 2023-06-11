@@ -20,11 +20,7 @@ router.patch(
 );
 router.delete("/deleteMe", users.deleteMeMiddleware, users.deleteMe);
 
-router.patch(
-  "/addMyDeviceToken",
-  users.addMydeviceTokenMiddleware,
-  users.addMydeviceToken
-);
+router.patch("/addMyDeviceToken", users.addMydeviceToken);
 
 router.use(restrictTo("admin"));
 router
