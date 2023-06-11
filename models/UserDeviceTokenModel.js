@@ -13,7 +13,7 @@ module.exports = (db) => {
       indexes: [
         {
           unique: true,
-          fields: ["userId", "deviceToken"],
+          fields: ["deviceToken"],
         },
       ],
     }

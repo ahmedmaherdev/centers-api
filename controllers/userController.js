@@ -186,14 +186,17 @@ exports.updateMeAsStudentMiddleware = async (req, res, next) => {
 
 exports.updateMeAsStudent = factoryHandler.updateOne(db.Students);
 
-exports.addMydeviceTokenMiddleware = (req, res, next) => {
+exports.addMydeviceToken = catchAsync(async (req, res, next) => {
   const { id: userId } = req.user;
   const { deviceToken } = req.body;
+  const userDeviceToken = await db.UserDeviceTokens.findOne({
+    where: { userId },
+  });
 
-  req.body = {
-    userId,
-    deviceToken,
-  };
-  next();
-};
-exports.addMydeviceToken = factoryHandler.createOne(db.UserDeviceTokens);
+  userDeviceToken.deviceToken = deviceToken;
+  await userDeviceToken.save();
+
+  Sender.send(res, StatusCodes.CREATED, {
+    userDeviceToken,
+  });
+});
