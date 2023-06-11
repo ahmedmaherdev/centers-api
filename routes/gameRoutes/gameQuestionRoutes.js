@@ -11,6 +11,7 @@ router.use(checkGameMiddleware);
 router.get("/", questions.getAllGameQuestions);
 
 router.get("/:id", questions.getQuestion);
+router.post("/createAnswer", restrictTo("student"), questions.createGameAnswer);
 
 router.use(restrictTo("manager", "admin"));
 
