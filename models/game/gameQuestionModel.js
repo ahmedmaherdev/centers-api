@@ -54,6 +54,10 @@ module.exports = (db) => {
         type: DataTypes.INTEGER,
         defaultValue: 30, // default value 30 seconds
       },
+
+      sendedAt: {
+        type: DataTypes.DATE,
+      },
     },
     {
       defaultScope: {
