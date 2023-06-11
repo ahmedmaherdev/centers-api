@@ -12,7 +12,7 @@ module.exports = (io) => {
     // game events
     socket.on("joinGame", gameEvents.joinGame(io, socket));
     socket.on("startGame", gameEvents.startGame(io, socket));
-    socket.on("sendGameAnswer", gameEvents.sendGameAnswer(io, socket));
+    // socket.on("sendGameAnswer", gameEvents.sendGameAnswer(io, socket));
 
     socket.on("disconnect", () => {
       console.log("user disconnected with id: ", socket.id);
