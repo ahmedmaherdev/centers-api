@@ -40,36 +40,24 @@ exports.createNoteNotification = async (req, res, next) => {
       url,
     });
 
-    // find all students that schoolYear belongs to schoolYear of note
-    const students = await db.Users.findAll({
-      where: {
-        role: "student",
-      },
+    let studentsDeviceTokens = await db.UserDeviceTokens.findAll({
       include: {
-        as: "student",
-        model: db.Students,
-        where: {
-          schoolYearId,
+        as: "user",
+        model: db.Users,
+        where: { role: "student" },
+        include: {
+          as: "student",
+          model: db.Students,
+          where: { schoolYearId },
         },
       },
-      attributes: ["id", "name"],
     });
 
-    for (const student of students) {
-      let userDeviceTokens = await db.UserDeviceTokens.findAll({
-        where: { userId: student.id },
-        attributes: ["deviceToken"],
-      });
-      userDeviceTokens = userDeviceTokens.map((obj) => obj.deviceToken);
-
-      if (userDeviceTokens.length > 0) {
-        noteNotification.deviceTokens = userDeviceTokens;
-        const res = await noteNotification.send();
-        noteLogger.info(
-          req.ip,
-          `note notification sent: ${JSON.stringify(res)}`
-        );
-      }
+    studentsDeviceTokens = studentsDeviceTokens.map((stud) => stud.deviceToken);
+    if (studentsDeviceTokens.length > 0) {
+      noteNotification.deviceTokens = studentsDeviceTokens;
+      const res = await noteNotification.send();
+      noteLogger.info(req.ip, `note notification sent: ${JSON.stringify(res)}`);
     }
   } catch (error) {
     noteLogger.error(req.ip, `note notification failed: ${error.message}`);

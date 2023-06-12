@@ -79,8 +79,8 @@ exports.deleteQuestion = factoryHandler.deleteOne(db.GameQuestions);
 
 exports.createGameAnswer = catchAsync(async (req, res, next) => {
   const { id: userId } = req.user;
-  const { id: gameId } = req.game;
-  const errorMessage = validate(req, gameQuestionsValidator.gameAnswer);
+  const { id: gameId, endedAt: gameEndedAt } = req.game;
+  const errorMessage = validate(req, questionValidator.gameAnswer);
   if (errorMessage) {
     gameLogger.error(
       req.ip,
@@ -89,6 +89,28 @@ exports.createGameAnswer = catchAsync(async (req, res, next) => {
     return next(new AppError(errorMessage, StatusCodes.BAD_REQUEST));
   }
 
+  if (moment(gameEndedAt).isAfter(Date.now())) {
+    gameLogger.error(
+      req.ip,
+      `${req.method} ${req.originalUrl} | STATUS: ${StatusCodes.BAD_REQUEST} | game is ended.`
+    );
+    return next(new AppError("Game is ended.", StatusCodes.BAD_REQUEST));
+  }
+
+  const gameStudent = await db.GameStudents.findOne({
+    gameId,
+    studentId: userId,
+  });
+
+  if (!gameStudent) {
+    gameLogger.error(
+      req.ip,
+      `${req.method} ${req.originalUrl} | STATUS: ${StatusCodes.BAD_REQUEST} | student is not joined the game.`
+    );
+    return next(
+      new AppError("You must join the game first.", StatusCodes.BAD_REQUEST)
+    );
+  }
   const gameQuestion = await db.GameQuestions.findOne({
     where: {
       gameId,
@@ -119,6 +141,6 @@ exports.createGameAnswer = catchAsync(async (req, res, next) => {
   });
 
   Sender.send(res, StatusCodes.CREATED, undefined, {
-    message: "Question is created Successfully.",
+    message: "Answer is created Successfully.",
   });
 });

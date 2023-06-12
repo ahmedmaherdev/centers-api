@@ -19,8 +19,7 @@ class Notification {
         body: `You have a new ${this.data.type}`,
       },
       data: { data: JSON.stringify(this.data) },
-      token: this.deviceTokens,
-      // topic: `${this.data.type}-1`,
+      tokens: this.deviceTokens,
     };
     return await admin.messaging().sendMulticast(message);
   }

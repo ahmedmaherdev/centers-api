@@ -57,34 +57,25 @@ exports.createExamNotification = async (req, res, next) => {
     });
 
     // find all students that department belongs to department of exam
-    const students = await db.Users.findAll({
-      where: {
-        role: "student",
-      },
+    let studentsDeviceTokens = await db.UserDeviceTokens.findAll({
       include: {
-        as: "student",
-        model: db.Students,
-        where: {
-          departmentId,
+        as: "user",
+        model: db.Users,
+        where: { role: "student" },
+        include: {
+          as: "student",
+          model: db.Students,
+          where: { departmentId },
         },
       },
-      attributes: ["id", "name"],
     });
-    for (const student of students) {
-      let userDeviceTokens = await db.UserDeviceTokens.findAll({
-        where: { userId: student.id },
-        attributes: ["deviceToken"],
-      });
-      userDeviceTokens = userDeviceTokens.map((obj) => obj.deviceToken);
 
-      if (userDeviceTokens.length > 0) {
-        examNotification.deviceTokens = userDeviceTokens;
-        const res = await examNotification.send();
-        examLogger.info(
-          req.ip,
-          `exam notification sent: ${JSON.stringify(res)}`
-        );
-      }
+    studentsDeviceTokens = studentsDeviceTokens.map((stud) => stud.deviceToken);
+
+    if (studentsDeviceTokens.length > 0) {
+      examNotification.deviceTokens = studentsDeviceTokens;
+      const res = await examNotification.send();
+      examLogger.info(req.ip, `exam notification sent: ${JSON.stringify(res)}`);
     }
   } catch (error) {
     examLogger.error(req.ip, `exam notification failed: ${error.message}`);
