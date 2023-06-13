@@ -68,7 +68,7 @@ module.exports = (db) => {
             attributes: ["id", "name"],
             include: {
               as: "departments",
-              model: db.departments,
+              model: db.Departments,
               attributes: [],
             },
           },

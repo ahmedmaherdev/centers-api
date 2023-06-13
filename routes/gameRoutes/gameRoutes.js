@@ -5,7 +5,7 @@ const restrictTo = require("../../utils/restrictTo");
 const protect = require("../../controllers/authController/protect");
 const questions = require("./gameQuestionRoutes");
 
-router.use("/:examId/questions", questions);
+router.use("/:gameId/questions", questions);
 
 router.use(protect);
 router.get("/", games.getAllGamesMiddleware, games.getAllGames);
