@@ -8,7 +8,7 @@ const validate = require("../utils/validate");
 const questionValidator = require("../validators/gameQuestionValidator");
 
 exports.getAllGameQuestions = catchAsync(async (req, res, next) => {
-  const { id: gameId } = req.exam;
+  const { id: gameId } = req.game;
 
   const gameQuestions = await db.GameQuestions.findAll({
     where: {

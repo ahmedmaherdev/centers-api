@@ -16,18 +16,23 @@ module.exports = (db) => {
         type: DataTypes.INTEGER,
         defaultValue: 0,
       },
-      period: {
-        type: DataTypes.INTEGER,
-        defaultValue: 0,
-      },
       startedAt: DataTypes.DATE,
       endedAt: DataTypes.DATE,
     },
     {
       defaultScope: {
-        as: "department",
-        model: db.departments,
-        attributes: ["id", "name"],
+        include: [
+          {
+            as: "department",
+            model: db.Departments,
+            attributes: ["id", "name"],
+          },
+          {
+            as: "createdBy",
+            model: db.Users,
+            attributes: ["id", "name", "photo", "role"],
+          },
+        ],
       },
     }
   );

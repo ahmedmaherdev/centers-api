@@ -14,9 +14,9 @@ exports.createGameQuestion = joi.object({
   subjectId: joi.number().integer().required(),
   period: joi
     .number()
-    .min(5 * 60)
+    .min(30) // 30 sec
     .max(2 * 60 * 60)
-    .required(), // min 5 mins and max 2 hours
+    .required(), // 2 hours
 });
 
 exports.updateGameQuestion = joi.object({
@@ -31,7 +31,7 @@ exports.updateGameQuestion = joi.object({
   subjectId: joi.number().integer(),
   period: joi
     .number()
-    .min(5 * 60)
+    .min(30)
     .max(2 * 60 * 60), // min 5 mins and max 2 hours
 });
 

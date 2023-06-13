@@ -101,7 +101,7 @@ exports.checkGameMiddleware = catchAsync(async (req, res, next) => {
   if (!game) {
     gameLogger.error(
       req.ip,
-      `${req.method} ${req.originalUrl} | STATUS: ${StatusCodes.NOT_FOUND} | No Game with this id: ${GameId}`
+      `${req.method} ${req.originalUrl} | STATUS: ${StatusCodes.NOT_FOUND} | No Game with this id: ${gameId}`
     );
     return next(
       new AppError(`No game with this id: ${gameId}`, StatusCodes.NOT_FOUND)
