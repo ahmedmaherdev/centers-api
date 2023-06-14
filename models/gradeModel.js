@@ -52,10 +52,22 @@ module.exports = (db) => {
               studentId: studentData.id,
             },
 
+            include: {
+              model: db.Exams,
+              as: "exam",
+              attributes: [],
+              include: {
+                model: db.Departments,
+                as: "department",
+                attributes: [],
+              },
+            },
+
             attributes: [[fn("sum", col("correct")), "totalCorrect"]],
+            raw: true,
           });
 
-          const points = studentPoints.dataValues?.totalCorrect ?? 0;
+          const points = studentPoints.totalCorrect ?? 0;
           studentData.student.allExams = totalExams;
           studentData.student.passExams = passExams;
           studentData.student.points = points;
