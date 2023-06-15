@@ -66,6 +66,7 @@ module.exports = (io) => {
         id: currentUser.id,
         role: currentUser.role,
         name: currentUser.name,
+        photo: currentUser.photo,
       };
 
       next();

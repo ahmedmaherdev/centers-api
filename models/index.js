@@ -42,6 +42,7 @@ db.Games = require("./game/gameModel")(db);
 db.GameStudents = require("./game/gameStudentModel")(db);
 db.GameQuestions = require("./game/gameQuestionModel")(db);
 db.GameAnswers = require("./game/gameAnswerModel")(db);
+db.GameMatches = require("./game/gameMatchModel")(db);
 db.Rooms = require("./chat/roomModel")(db);
 db.Messages = require("./chat/messageModel")(db);
 
