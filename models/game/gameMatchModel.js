@@ -1,12 +1,27 @@
 const { DataTypes } = require("sequelize");
 
 module.exports = (db) => {
-  const GameMatch = db.define("GameMatch", {
-    round: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
+  const GameMatch = db.define(
+    "GameMatch",
+    {
+      round: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
     },
-  });
+    {
+      indexes: [
+        {
+          unique: true,
+          fields: ["gameId", "round", "student1Id"],
+        },
+        {
+          unique: true,
+          fields: ["gameId", "round", "student2Id"],
+        },
+      ],
+    }
+  );
   GameMatch.belongsTo(db.Games, {
     as: "game",
     onDelete: "CASCADE",

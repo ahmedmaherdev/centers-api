@@ -3,49 +3,103 @@ const SocketError = require("./socketError");
 const db = require("../../models");
 const { gameAnswer } = require("../../validators/gameQuestionValidator");
 const moment = require("moment");
+const gameUtils = require("./gameUtils");
 
-const sleep = (ms) => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-};
+const handleGame = async (io, socket) => {
+  let round = 1;
 
-const getRandomNumberLessThan = (num) => {
-  return Math.floor(Math.random() * num);
-};
+  // get all students on sockets
+  let allGameSockets = await io.in(socket.gameName).fetchSockets();
+  allGameSockets = allGameSockets.filter(
+    (sock) => sock.user.role === "student"
+  );
 
-const handleQuestions = async (io, socket) => {
-  socket.gameRound = 1;
-  io.to(socket.gameName).emit("roundStarted", socket.gameRound);
-
-  const gameQuestions = await db.GameQuestions.findAll({
+  let gameQuestions = await db.GameQuestions.findAll({
     where: { gameId: socket.game.id },
     sort: ["id"],
   });
 
-  const gameStudents = await db.GameStudents.findAll({
-    where: { gameId: socket.game.id },
-    sort: ["id"],
-  });
+  while (allGameSockets.length > 10) {
+    // start the round
 
-  const allGameSockets = await io.in(socket.gameName).fetchSockets();
+    let gameStudents = await db.GameStudents.findAll({
+      where: { gameId: socket.game.id },
+      sort: ["id"],
+    });
 
-  for (let i = 0; i < gameStudents.length - 1; i += 2) {
-    const randomIndex = getRandomNumberLessThan(gameQuestions.length);
-    const selectedQuestion = gameQuestions[randomIndex];
-    const student1 = allGameSockets.find(
-      (sock) => sock.user.id === gameStudents[i].studentId
-    );
-    const student2 = allGameSockets.find(
-      (sock) => sock.user.id === gameStudents[i + 1].studentId
-    );
+    // randomize the questions and students order
+    gameStudents = gameUtils.randomizeArray(gameStudents);
 
-    selectedQuestion.sendedAt = moment(Date.now());
-    io.to(student1.id).emit("newQuestion", selectedQuestion);
-    io.to(student2.id).emit("newQuestion", selectedQuestion);
+    // send questions to students
+    for (let i = 0; i < gameStudents.length - 1; i += 2) {
+      const randomIndex = gameUtils.getRandomNumberLessThan(
+        gameQuestions.length
+      );
+      const selectedQuestion = gameQuestions[randomIndex];
+      const studentSocket1 = allGameSockets.find(
+        (sock) => sock.user.id === gameStudents[i].studentId
+      );
+      const studentSocket2 = allGameSockets.find(
+        (sock) => sock.user.id === gameStudents[i + 1].studentId
+      );
+
+      const match = await db.gameMatches.create({
+        student1Id: studentSocket1.user.id,
+        student2Id: studentSocket2.user.id,
+        questionId: selectedQuestion.id,
+        gameId: socket.game.id,
+        round,
+      });
+
+      io.to(studentSocket1.id).emit(
+        "newMatch",
+        selectedQuestion,
+        studentSocket2.user
+      );
+      io.to(studentSocket2.id).emit(
+        "newMatch",
+        selectedQuestion,
+        studentSocket1.user
+      );
+    }
+
+    await gameUtils.sleep(socket.game.period * 1000);
+
+    // filter the winners and losers
+    const gameMatches = await db.GameMatches.findAll({
+      where: {
+        gameId: socket.game.id,
+        round,
+      },
+    });
+
+    for (let match of gameMatches) {
+      const studentSocket1 = allGameSockets.find(
+        (sock) => sock.user.id === match.student1Id
+      );
+      const studentSocket2 = allGameSockets.find(
+        (sock) => sock.user.id === match.student2Id
+      );
+
+      const winnerAnswer = await db.GameAnswers.findOne({
+        where: {
+          gameMatchId: match.gameMatchId,
+        },
+
+        order: [["points", "DESC"]],
+        limit: 1,
+      });
+
+      // 2 students do not answer
+      if (!winnerAnswer) {
+        io.to(studentSocket1.id).emit("loser");
+        io.to(studentSocket2.id).emit("loser");
+        studentSocket1.leave(socket.gameName);
+        studentSocket2.leave(socket.gameName);
+      }
+    }
+    round++;
   }
-
-  await sleep(socket.game.period * 1000);
 };
 
 exports.joinGame = (io, socket) => {
@@ -89,7 +143,6 @@ exports.joinGame = (io, socket) => {
           studentId: userId,
         });
         await game.save();
-        io.to(socket.gameName).emit("studentJoined", socket.user);
       }
 
       socket.emit("joinGameSuccess", game);
@@ -133,13 +186,13 @@ exports.startGame = (io, socket) => {
         return;
       }
 
-      io.to(socket.gameName).emit("gameStarted");
+      // start the game.
       socket.game.startedAt = moment(Date.now());
       await socket.game.save();
 
       await handleQuestions(io, socket);
 
-      io.to(socket.gameName).emit("gameEnded");
+      // end the game
       socket.game.endedAt = moment(Date.now());
       await socket.game.save();
     } catch (error) {
@@ -147,7 +200,7 @@ exports.startGame = (io, socket) => {
       socket.emit(
         "error",
         new SocketError(
-          "Can not join this game, try again later.",
+          "Can not start this game, try again later.",
           StatusCodes.INTERNAL_SERVER_ERROR
         )
       );

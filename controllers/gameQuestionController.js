@@ -111,10 +111,13 @@ exports.createGameAnswer = catchAsync(async (req, res, next) => {
       new AppError("You must join the game first.", StatusCodes.BAD_REQUEST)
     );
   }
-  const gameQuestion = await db.GameQuestions.findOne({
+
+  const gameMatch = await db.GameMatches.findByPk(req.body.matchId);
+
+  const gameQuestion = await db.GameQuestios.findOne({
     where: {
       gameId,
-      questionId,
+      questionId: gameMatch.questionId,
       answer,
     },
   });
