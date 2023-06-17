@@ -14,7 +14,7 @@ module.exports = (db) => {
       },
       pirority: {
         type: DataTypes.ENUM("important", "unimportant"),
-        defaultValue: "unimportent",
+        defaultValue: "unimportant",
       },
       startedAt: {
         type: DataTypes.DATE,
