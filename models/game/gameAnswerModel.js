@@ -39,5 +39,13 @@ module.exports = (db) => {
       allowNull: false,
     },
   });
+
+  GameAnswer.belongsTo(db.Games, {
+    as: "game",
+    foreignKey: {
+      name: "gameId",
+      allowNull: false,
+    },
+  });
   return GameAnswer;
 };

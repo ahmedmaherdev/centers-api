@@ -1,106 +1,8 @@
 const { StatusCodes } = require("http-status-codes");
 const SocketError = require("./socketError");
 const db = require("../../models");
-const { gameAnswer } = require("../../validators/gameQuestionValidator");
 const moment = require("moment");
 const gameUtils = require("./gameUtils");
-
-const handleGame = async (io, socket) => {
-  let round = 1;
-
-  // get all students on sockets
-  let allGameSockets = await io.in(socket.gameName).fetchSockets();
-  allGameSockets = allGameSockets.filter(
-    (sock) => sock.user.role === "student"
-  );
-
-  let gameQuestions = await db.GameQuestions.findAll({
-    where: { gameId: socket.game.id },
-    sort: ["id"],
-  });
-
-  while (allGameSockets.length > 10) {
-    // start the round
-
-    let gameStudents = await db.GameStudents.findAll({
-      where: { gameId: socket.game.id },
-      sort: ["id"],
-    });
-
-    // randomize the questions and students order
-    gameStudents = gameUtils.randomizeArray(gameStudents);
-
-    // send questions to students
-    for (let i = 0; i < gameStudents.length - 1; i += 2) {
-      const randomIndex = gameUtils.getRandomNumberLessThan(
-        gameQuestions.length
-      );
-      const selectedQuestion = gameQuestions[randomIndex];
-      const studentSocket1 = allGameSockets.find(
-        (sock) => sock.user.id === gameStudents[i].studentId
-      );
-      const studentSocket2 = allGameSockets.find(
-        (sock) => sock.user.id === gameStudents[i + 1].studentId
-      );
-
-      const match = await db.gameMatches.create({
-        student1Id: studentSocket1.user.id,
-        student2Id: studentSocket2.user.id,
-        questionId: selectedQuestion.id,
-        gameId: socket.game.id,
-        round,
-      });
-
-      io.to(studentSocket1.id).emit(
-        "newMatch",
-        selectedQuestion,
-        studentSocket2.user
-      );
-      io.to(studentSocket2.id).emit(
-        "newMatch",
-        selectedQuestion,
-        studentSocket1.user
-      );
-    }
-
-    await gameUtils.sleep(socket.game.period * 1000);
-
-    // filter the winners and losers
-    const gameMatches = await db.GameMatches.findAll({
-      where: {
-        gameId: socket.game.id,
-        round,
-      },
-    });
-
-    for (let match of gameMatches) {
-      const studentSocket1 = allGameSockets.find(
-        (sock) => sock.user.id === match.student1Id
-      );
-      const studentSocket2 = allGameSockets.find(
-        (sock) => sock.user.id === match.student2Id
-      );
-
-      const winnerAnswer = await db.GameAnswers.findOne({
-        where: {
-          gameMatchId: match.gameMatchId,
-        },
-
-        order: [["points", "DESC"]],
-        limit: 1,
-      });
-
-      // 2 students do not answer
-      if (!winnerAnswer) {
-        io.to(studentSocket1.id).emit("loser");
-        io.to(studentSocket2.id).emit("loser");
-        studentSocket1.leave(socket.gameName);
-        studentSocket2.leave(socket.gameName);
-      }
-    }
-    round++;
-  }
-};
 
 exports.joinGame = (io, socket) => {
   return async (gameId) => {
@@ -190,7 +92,7 @@ exports.startGame = (io, socket) => {
       socket.game.startedAt = moment(Date.now());
       await socket.game.save();
 
-      await handleQuestions(io, socket);
+      await gameUtils.handleGame(io, socket);
 
       // end the game
       socket.game.endedAt = moment(Date.now());
@@ -204,6 +106,21 @@ exports.startGame = (io, socket) => {
           StatusCodes.INTERNAL_SERVER_ERROR
         )
       );
+    }
+  };
+};
+
+exports.leaveGame = (io, socket) => {
+  return async () => {
+    if (socket.game && socket.user.role === "student") {
+      await db.GameStudents.destroy({
+        where: {
+          gameId: socket.game.id,
+          studentId: socket.user.id,
+        },
+      });
+
+      io.in(socket.gameName).emit("studentLeft", socket.user);
     }
   };
 };
