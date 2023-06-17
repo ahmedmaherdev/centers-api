@@ -37,5 +37,5 @@ exports.updateGameQuestion = joi.object({
 
 exports.gameAnswer = joi.object({
   answer: joi.string().valid("A", "B", "C", "D").required(),
-  questionId: joi.number().integer().required(),
+  matchId: joi.number().integer().required(),
 });

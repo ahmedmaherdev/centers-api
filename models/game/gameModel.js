@@ -16,6 +16,10 @@ module.exports = (db) => {
         type: DataTypes.INTEGER,
         defaultValue: 0,
       },
+      period: {
+        type: DataTypes.INTEGER,
+        defaultValue: 0,
+      },
       startedAt: DataTypes.DATE,
       endedAt: DataTypes.DATE,
     },

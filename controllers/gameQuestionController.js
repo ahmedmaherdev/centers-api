@@ -80,6 +80,7 @@ exports.deleteQuestion = factoryHandler.deleteOne(db.GameQuestions);
 exports.createGameAnswer = catchAsync(async (req, res, next) => {
   const { id: userId } = req.user;
   const { id: gameId, endedAt: gameEndedAt } = req.game;
+
   const errorMessage = validate(req, questionValidator.gameAnswer);
   if (errorMessage) {
     gameLogger.error(
@@ -111,10 +112,13 @@ exports.createGameAnswer = catchAsync(async (req, res, next) => {
       new AppError("You must join the game first.", StatusCodes.BAD_REQUEST)
     );
   }
-  const gameQuestion = await db.GameQuestions.findOne({
+
+  const gameMatch = await db.GameMatches.findByPk(req.body.matchId);
+
+  const gameQuestion = await db.GameQuestios.findOne({
     where: {
       gameId,
-      questionId,
+      questionId: gameMatch.questionId,
       answer,
     },
   });
@@ -123,18 +127,15 @@ exports.createGameAnswer = catchAsync(async (req, res, next) => {
   let points = 0;
   if (gameQuestion) {
     // clac the points for student (endedAt (startedAt) - now)
-    const endedAt = moment(gameQuestion.sendedAt).add(
-      gameQuestion.period,
-      "second"
-    );
+    const endedAt = moment(gameMatch.createdAt).add(req.game.period, "second");
     const now = moment(Date.now());
     const diff = endedAt.diff(now, "second");
-    points = diff > 0 ? Math.ceil((diff / gameQuestion.period) * 100) : 0;
+    points = diff > 0 ? Math.ceil((diff / req.game.period) * 100) : 0;
   }
 
   await db.GameAnswers.create({
     gameId: socket.game.id,
-    questionId,
+    gameMatchId: gameMatch.id,
     answer,
     studentId: userId,
     points,

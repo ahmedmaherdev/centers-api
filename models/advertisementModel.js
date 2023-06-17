@@ -13,7 +13,7 @@ module.exports = (db) => {
         allowNull: false,
       },
       pirority: {
-        type: DataTypes.ENUM("important", "unimportent"),
+        type: DataTypes.ENUM("important", "unimportant"),
         defaultValue: "unimportent",
       },
       startedAt: {

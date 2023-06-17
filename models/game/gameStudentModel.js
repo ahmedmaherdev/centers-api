@@ -1,6 +1,23 @@
 const { DataTypes } = require("sequelize");
 
 module.exports = (db) => {
+  const calcGameStudents = async (gameStudent, GameStudent) => {
+    const studentsCount = await GameStudent.count({
+      where: {
+        gameId: gameStudent.gameId,
+      },
+    });
+
+    await db.Games.update(
+      {
+        studentsCount,
+      },
+      {
+        where: { id: gameStudent.gameId },
+      }
+    );
+  };
+
   const GameStudent = db.define(
     "GameStudent",
     {},
@@ -11,6 +28,15 @@ module.exports = (db) => {
           fields: ["studentId", "gameId"],
         },
       ],
+
+      hooks: {
+        afterCreate: async function (gameStudent, options) {
+          calcGameStudents(gameStudent, GameStudent);
+        },
+        afterDestroy: async function (gameStudent, options) {
+          await calcGameStudents(gameStudent, GameStudent);
+        },
+      },
     }
   );
 

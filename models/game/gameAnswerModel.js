@@ -17,7 +17,7 @@ module.exports = (db) => {
       indexes: [
         {
           unique: true,
-          fields: ["studentId", "gameQuestionId"],
+          fields: ["studentId", "gameMatchId"],
         },
       ],
     }
@@ -32,20 +32,18 @@ module.exports = (db) => {
     },
   });
 
-  GameAnswer.belongsTo(db.Games, {
-    as: "game",
-    onDelete: "CASCADE",
+  GameAnswer.belongsTo(db.GameMatches, {
+    as: "match",
     foreignKey: {
-      name: "gameId",
+      name: "gameMatchId",
       allowNull: false,
     },
   });
 
-  GameAnswer.belongsTo(db.GameQuestions, {
-    as: "question",
-    onDelete: "CASCADE",
+  GameAnswer.belongsTo(db.Games, {
+    as: "game",
     foreignKey: {
-      name: "gameQuestionId",
+      name: "gameId",
       allowNull: false,
     },
   });
