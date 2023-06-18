@@ -15,7 +15,7 @@ exports.createAdvertisement = joi.object({
         return helpers.message("endedAt date must bigger than now.");
     })
     .required(),
-  schoolYearId: joi.number().integer().required(),
+  departmentId: joi.number().integer().required(),
 });
 
 exports.updateAdvertisement = joi.object({
@@ -30,5 +30,5 @@ exports.updateAdvertisement = joi.object({
     if (new Date(value) < new Date(Date.now()))
       return helpers.message("startedAt date must bigger than now.");
   }),
-  schoolYearId: joi.number().integer(),
+  departmentId: joi.number().integer(),
 });

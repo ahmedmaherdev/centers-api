@@ -45,6 +45,9 @@ exports.createSubscribeNotification = async (req, res, next) => {
         subscribedTill,
       });
 
+      subscribeNotification.body = `You have been successfully subscribed to ${moment(
+        subscribedTill
+      ).format("DD-MM-YYYY")}.`;
       const res = await subscribeNotification.send();
       subscribeLogger.info(
         req.ip,
