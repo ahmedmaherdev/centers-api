@@ -7,7 +7,7 @@ module.exports = (db) => {
         gameId: gameStudent.gameId,
       },
     });
-
+    console.log(studentsCount);
     await db.Games.update(
       {
         studentsCount,
@@ -33,8 +33,13 @@ module.exports = (db) => {
         afterCreate: async function (gameStudent, options) {
           calcGameStudents(gameStudent, GameStudent);
         },
-        afterDestroy: async function (gameStudent, options) {
-          await calcGameStudents(gameStudent, GameStudent);
+        // afterDestroy: async function (gameStudent, options) {
+
+        //   await calcGameStudents(gameStudent, GameStudent);
+        // },
+        afterBulkDestroy: async function (options) {
+          console.log(options);
+          await calcGameStudents(options.where, GameStudent);
         },
       },
     }

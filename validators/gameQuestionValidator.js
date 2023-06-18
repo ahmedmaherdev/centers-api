@@ -12,11 +12,11 @@ exports.createGameQuestion = joi.object({
     .required(),
   answer: joi.string().valid("A", "B", "C", "D").required(),
   subjectId: joi.number().integer().required(),
-  period: joi
-    .number()
-    .min(30) // 30 sec
-    .max(2 * 60 * 60)
-    .required(), // 2 hours
+  // period: joi
+  //   .number()
+  //   .min(30) // 30 sec
+  //   .max(2 * 60 * 60)
+  //   .required(), // 2 hours
 });
 
 exports.updateGameQuestion = joi.object({
@@ -29,10 +29,10 @@ exports.updateGameQuestion = joi.object({
   }),
   answer: joi.string().valid("A", "B", "C", "D"),
   subjectId: joi.number().integer(),
-  period: joi
-    .number()
-    .min(30)
-    .max(2 * 60 * 60), // min 5 mins and max 2 hours
+  // period: joi
+  //   .number()
+  //   .min(30)
+  //   .max(2 * 60 * 60), // min 5 mins and max 2 hours
 });
 
 exports.gameAnswer = joi.object({

@@ -8,6 +8,15 @@ exports.joinGame = (io, socket) => {
   return async (gameId) => {
     try {
       const { role: userRole, id: userId } = socket.user;
+
+      if (socket.game) {
+        socket.emit(
+          "error",
+          new SocketError(`You already in a game.`, StatusCodes.BAD_REQUEST)
+        );
+        return;
+      }
+
       const game = await db.Games.findByPk(gameId);
       // Game Rules
       // - can not join game is started
@@ -39,16 +48,12 @@ exports.joinGame = (io, socket) => {
       socket.join(socket.gameName); // room name is 'game-{gameId}'
 
       if (userRole === "student") {
-        game.studentsCount++;
         await db.GameStudents.create({
           gameId,
           studentId: userId,
         });
-        await game.save();
       }
-
       socket.emit("joinGameSuccess", game);
-
       socket.game = game;
     } catch (error) {
       console.log(error);
@@ -110,17 +115,14 @@ exports.startGame = (io, socket) => {
   };
 };
 
-exports.leaveGame = (io, socket) => {
-  return async () => {
-    if (socket.game && socket.user.role === "student") {
-      await db.GameStudents.destroy({
-        where: {
-          gameId: socket.game.id,
-          studentId: socket.user.id,
-        },
-      });
-
-      io.in(socket.gameName).emit("studentLeft", socket.user);
-    }
-  };
+exports.leaveGame = async (io, socket) => {
+  if (socket.game && socket.user.role === "student") {
+    await db.GameStudents.destroy({
+      where: {
+        gameId: socket.game.id,
+        studentId: socket.user.id,
+      },
+    });
+    io.in(socket.gameName).emit("studentLeft", socket.user);
+  }
 };

@@ -50,14 +50,14 @@ module.exports = (db) => {
         allowNull: false,
       },
 
-      period: {
-        type: DataTypes.INTEGER,
-        defaultValue: 30, // default value 30 seconds
-      },
+      // period: {
+      //   type: DataTypes.INTEGER,
+      //   defaultValue: 30, // default value 30 seconds
+      // },
 
-      sendedAt: {
-        type: DataTypes.DATE,
-      },
+      // sendedAt: {
+      //   type: DataTypes.DATE,
+      // },
     },
     {
       defaultScope: {
