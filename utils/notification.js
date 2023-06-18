@@ -10,13 +10,15 @@ class Notification {
   constructor(deviceTokens, data) {
     this.deviceTokens = deviceTokens;
     this.data = data;
+    this.title = `New ${this.data.type}`;
+    this.body = `You have a new ${this.data.type}`;
   }
 
   async send() {
     const message = {
       notification: {
-        title: `New ${this.data.type}`,
-        body: `You have a new ${this.data.type}`,
+        title: this.title,
+        body: this.body,
       },
       data: { data: JSON.stringify(this.data) },
       tokens: this.deviceTokens,

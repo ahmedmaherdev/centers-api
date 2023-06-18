@@ -40,7 +40,7 @@ exports.createAdvertisement = factoryHandler.createOne(
 exports.createAdvertisementNotification = async (req, res, next) => {
   // notification here
   try {
-    const { id, schoolYearId, pirority } = req.createdData;
+    const { id, departmentId, pirority } = req.createdData;
     // do not send notification if pirority is not important
     if (pirority !== "important") return next();
     const type = "advertisement";
@@ -58,7 +58,7 @@ exports.createAdvertisementNotification = async (req, res, next) => {
         include: {
           as: "student",
           model: db.Students,
-          where: { schoolYearId },
+          where: { departmentId },
         },
       },
     });

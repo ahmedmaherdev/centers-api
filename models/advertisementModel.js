@@ -42,18 +42,18 @@ module.exports = (db) => {
         },
         include: [
           {
-            as: "schoolYear",
-            model: db.SchoolYears,
+            as: "department",
+            model: db.Departments,
           },
         ],
       },
     }
   );
 
-  Advertisement.belongsTo(db.SchoolYears, {
-    as: "schoolYear",
+  Advertisement.belongsTo(db.Departments, {
+    as: "department",
     foreignKey: {
-      name: "schoolYearId",
+      name: "departmentId",
       allowNull: false,
     },
   });

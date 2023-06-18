@@ -74,6 +74,7 @@ exports.createExamNotification = async (req, res, next) => {
 
     if (studentsDeviceTokens.length > 0) {
       examNotification.deviceTokens = studentsDeviceTokens;
+      examNotification.body = `The ${name} exam is created.`;
       const res = await examNotification.send();
       examLogger.info(req.ip, `exam notification sent: ${JSON.stringify(res)}`);
     }
