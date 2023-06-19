@@ -15,9 +15,9 @@ module.exports = (io) => {
     socket.on("startGame", gameEventsV2.startGame(io, socket));
     // socket.on("sendGameAnswer", gameEvents.sendGameAnswer(io, socket));
 
-    socket.on("disconnect", async (socket) => {
+    socket.on("disconnect", async () => {
       console.log("user disconnected with id: ", socket.id);
-      gameEventsV2.leaveGame(io, socket);
+      await gameEventsV2.leaveGame(io, socket);
     });
   };
 };

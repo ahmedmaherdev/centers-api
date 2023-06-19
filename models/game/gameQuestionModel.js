@@ -9,18 +9,9 @@ module.exports = (db) => {
       where: { gameId },
     });
 
-    const gameQuestionsPeriod = await GameQuestion.findOne({
-      where: {
-        gameId,
-      },
-
-      attributes: [[fn("SUM", col("period")), "totalPeriod"]],
-    });
-
     await db.Games.update(
       {
         questionsCount: gameQuestionsCount,
-        period: gameQuestionsPeriod.dataValues?.totalPeriod ?? 0,
       },
       {
         where: { id: gameId },
@@ -50,14 +41,14 @@ module.exports = (db) => {
         allowNull: false,
       },
 
-      period: {
-        type: DataTypes.INTEGER,
-        defaultValue: 30, // default value 30 seconds
-      },
+      // period: {
+      //   type: DataTypes.INTEGER,
+      //   defaultValue: 30, // default value 30 seconds
+      // },
 
-      sendedAt: {
-        type: DataTypes.DATE,
-      },
+      // sendedAt: {
+      //   type: DataTypes.DATE,
+      // },
     },
     {
       defaultScope: {
