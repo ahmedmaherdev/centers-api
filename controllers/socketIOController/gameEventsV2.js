@@ -46,6 +46,9 @@ exports.joinGame = (io, socket) => {
       }
       socket.gameName = `game-${game.id}`;
       socket.join(socket.gameName); // room name is 'game-{gameId}'
+      console.log(
+        `${socket.user.role} ${socket.user.name} join the game: ${socket.gameName}`
+      );
 
       if (userRole === "student") {
         await db.GameStudents.create({
@@ -96,10 +99,16 @@ exports.startGame = (io, socket) => {
       // start the game.
       socket.game.startedAt = moment(Date.now());
       await socket.game.save();
+      io.in(socket.gameName).emit("gameStarted");
+      console.log(
+        `${socket.user.role} ${socket.user.name} start the game: ${socket.gameName}`
+      );
 
-      await gameUtils.handleGame(io, socket);
+      const winners = await gameUtils.handleGame(io, socket);
 
       // end the game
+      io.in(socket.gameName).emit("gameEnded", winners);
+      console.log(`${socket.gameName} game is ended.`);
       socket.game.endedAt = moment(Date.now());
       await socket.game.save();
     } catch (error) {

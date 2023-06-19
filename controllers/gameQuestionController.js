@@ -6,6 +6,9 @@ const factoryHandler = require("./factoryHandler");
 const Sender = require("../utils/Sender");
 const validate = require("../utils/validate");
 const questionValidator = require("../validators/gameQuestionValidator");
+const moment = require("moment");
+const Logger = require("../utils/Logger");
+const gameLogger = new Logger("game");
 
 exports.getAllGameQuestions = catchAsync(async (req, res, next) => {
   const { id: gameId } = req.game;
@@ -99,8 +102,10 @@ exports.createGameAnswer = catchAsync(async (req, res, next) => {
   }
 
   const gameStudent = await db.GameStudents.findOne({
-    gameId,
-    studentId: userId,
+    where: {
+      gameId,
+      studentId: userId,
+    },
   });
 
   if (!gameStudent) {
@@ -115,11 +120,11 @@ exports.createGameAnswer = catchAsync(async (req, res, next) => {
 
   const gameMatch = await db.GameMatches.findByPk(req.body.matchId);
 
-  const gameQuestion = await db.GameQuestios.findOne({
+  const gameQuestion = await db.GameQuestions.findOne({
     where: {
+      id: gameMatch.gameQuestionId,
       gameId,
-      questionId: gameMatch.questionId,
-      answer,
+      answer: req.body.answer,
     },
   });
 
@@ -134,9 +139,9 @@ exports.createGameAnswer = catchAsync(async (req, res, next) => {
   }
 
   await db.GameAnswers.create({
-    gameId: socket.game.id,
+    gameId: gameId,
     gameMatchId: gameMatch.id,
-    answer,
+    answer: req.body.answer,
     studentId: userId,
     points,
   });

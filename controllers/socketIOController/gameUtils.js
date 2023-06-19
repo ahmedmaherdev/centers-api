@@ -19,6 +19,7 @@ const randomizeArray = (arr) => {
 };
 
 const getMatchResult = (studentSocket1, studentSocket2, winnerAnswer) => {
+  if (!winnerAnswer) return undefined;
   if (studentSocket1 && studentSocket1.user.id === winnerAnswer.studentId) {
     return [studentSocket1, studentSocket2];
   }
@@ -30,7 +31,7 @@ const getMatchResult = (studentSocket1, studentSocket2, winnerAnswer) => {
   return undefined;
 };
 
-const filterStudents = async (socket, allGameSockets) => {
+const filterStudents = async (io, socket, allGameSockets, round) => {
   // filter the winners and losers
   const gameMatches = await db.GameMatches.findAll({
     where: {
@@ -40,9 +41,10 @@ const filterStudents = async (socket, allGameSockets) => {
   });
 
   for (let match of gameMatches) {
+    console;
     const winnerAnswer = await db.GameAnswers.findOne({
       where: {
-        gameMatchId: match.gameMatchId,
+        gameMatchId: match.id,
       },
 
       order: [["points", "DESC"]],
@@ -68,33 +70,52 @@ const filterStudents = async (socket, allGameSockets) => {
       io.to(winnerSocket.id).emit("winner");
       io.to(loserSocket.id).emit("loser");
       loserSocket.disconnect();
+
+      console.log(
+        `${loserSocket.user.role} ${loserSocket.user.name} lose the game: ${socket.gameName}`
+      );
+      console.log(
+        `${winnerSocket.user.role} ${winnerSocket.user.name} win the game: ${socket.gameName}`
+      );
     } else {
       // 2 players are wrong
       if (studentSocket1) {
         io.to(studentSocket1.id).emit("loser");
         studentSocket1.disconnect();
+        console.log(
+          `${studentSocket1.user.role} ${studentSocket1.user.name} lose the game: ${socket.gameName}`
+        );
       }
 
       if (studentSocket2) {
         io.to(studentSocket2.id).emit("loser");
         studentSocket2.disconnect();
+        console.log(
+          `${studentSocket2.user.role} ${studentSocket1.user.name} lose the game: ${socket.gameName}`
+        );
       }
     }
   }
 };
 
-const handleQuestions = async (io, socket, allGameSockets, gameQuestions) => {
+const handleQuestions = async (
+  io,
+  socket,
+  round,
+  allGameSockets,
+  gameQuestions
+) => {
   let gameStudents = await db.GameStudents.findAll({
     where: { gameId: socket.game.id },
     sort: ["id"],
+    raw: true,
   });
 
   // randomize the questions and students order
-  gameStudents = gameUtils.randomizeArray(gameStudents);
-
+  gameStudents = randomizeArray(gameStudents);
   // send questions to students
   for (let i = 0; i < gameStudents.length - 1; i += 2) {
-    const randomIndex = gameUtils.getRandomNumberLessThan(gameQuestions.length);
+    const randomIndex = getRandomNumberLessThan(gameQuestions.length);
     const selectedQuestion = gameQuestions[randomIndex];
     const studentSocket1 = allGameSockets.find(
       (sock) => sock.user.id === gameStudents[i].studentId
@@ -103,10 +124,10 @@ const handleQuestions = async (io, socket, allGameSockets, gameQuestions) => {
       (sock) => sock.user.id === gameStudents[i + 1].studentId
     );
 
-    let match = await db.gameMatches.create({
+    let match = await db.GameMatches.create({
       student1Id: studentSocket1.user.id,
       student2Id: studentSocket2.user.id,
-      questionId: selectedQuestion.id,
+      gameQuestionId: selectedQuestion.id,
       gameId: socket.game.id,
       round,
     });
@@ -147,23 +168,27 @@ const handleGame = async (io, socket) => {
   let gameQuestions = await db.GameQuestions.findAll({
     where: { gameId: socket.game.id },
     sort: ["id"],
+    raw: true,
   });
 
-  while (allGameSockets.length > 10) {
+  while (allGameSockets.length > 2) {
     // start the round
     io.in(socket.gameName).emit("roundStarted", round);
+    console.log(`game round: ${round} is started.`);
 
     // start sending questions
-    await handleQuestions(io, socket, allGameSockets, gameQuestions);
+    await handleQuestions(io, socket, round, allGameSockets, gameQuestions);
 
     // block the code for game question period
-    await gameUtils.sleep(socket.game.period * 1000);
+    await sleep(socket.game.period * 1000);
+    console.log(`Stop for ${socket.game.period} seconds.`);
 
     // filter students
-    await filterStudents(socket, allGameSockets);
+    await filterStudents(io, socket, allGameSockets, round);
 
     // round finished
-    io.in(socket.gameName).emit("roundfinished", round);
+    io.in(socket.gameName).emit("roundEnded", round);
+    console.log(`game round: ${round} is ended.`);
     round++;
 
     // get all students on sockets
@@ -172,6 +197,10 @@ const handleGame = async (io, socket) => {
       (sock) => sock.user.role === "student"
     );
   }
+
+  return allGameSockets.map((sock) => {
+    if (sock.user.role === "student") return sock.user;
+  });
 };
 
 module.exports = {
