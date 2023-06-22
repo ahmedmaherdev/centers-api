@@ -4,6 +4,7 @@ const Notification = require("../utils/notification");
 const Logger = require("../utils/Logger");
 const subscribeLogger = new Logger("subscribe");
 const moment = require("moment");
+const subscribeValidator = require("../validators/subscribeValidator");
 
 exports.getAllSubscribes = factoryHandler.getAll(
   db.Subscribes,
@@ -13,12 +14,24 @@ exports.getAllSubscribes = factoryHandler.getAll(
 exports.getSubscribe = factoryHandler.getOne(db.Subscribes, subscribeLogger);
 
 exports.createSubscribeMiddleware = (req, res, next) => {
+  const result = subscribeValidator.createSubscribe.validate(req.body);
+  if (result.error) {
+    advertisementLogger.error(
+      req.ip,
+      `${req.method} ${req.originalUrl} | STATUS: ${StatusCodes.BAD_REQUEST} | ${result.error.details[0].message}`
+    );
+    return next(
+      new AppError(result.error.details[0].message, StatusCodes.BAD_REQUEST)
+    );
+  }
+
   const { studentId } = req.body;
   const { id: userId } = req.user;
   req.body = {
     studentId,
     createdById: userId,
   };
+
   req.isHasNotification = true;
   next();
 };
@@ -46,7 +59,7 @@ exports.createSubscribeNotification = async (req, res, next) => {
         subscribedTill,
       });
 
-      subscribeNotification.body = `You have been successfully subscribed to ${moment(
+      subscribeNotification.body = `You have been successfully subscribed until ${moment(
         subscribedTill
       ).format("DD-MM-YYYY")}.`;
       const res = await subscribeNotification.send();
