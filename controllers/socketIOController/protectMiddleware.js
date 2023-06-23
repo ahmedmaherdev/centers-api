@@ -72,12 +72,7 @@ module.exports = (io) => {
       next();
     } catch (error) {
       console.log(error);
-      next(
-        new SocketError(
-          "Somthing went wrong",
-          StatusCodes.INTERNAL_SERVER_ERROR
-        )
-      );
+      next(new SocketError("Authentication failed.", StatusCodes.UNAUTHORIZED));
     }
   };
 };
