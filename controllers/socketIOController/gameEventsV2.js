@@ -4,6 +4,22 @@ const db = require("../../models");
 const moment = require("moment");
 const gameUtils = require("./gameUtils");
 
+const startSocketGame = async (io, socket) => {
+  socket.game.startedAt = moment(Date.now());
+  await socket.game.save();
+  io.in(socket.gameName).emit("gameStarted");
+  console.log(
+    `${socket.user.role} ${socket.user.name} start the game: ${socket.gameName}`
+  );
+};
+
+const endSocketGame = async (io, socket) => {
+  socket.game.endedAt = moment(Date.now());
+  await socket.game.save();
+  io.in(socket.gameName).emit("gameEnded");
+  console.log(`${socket.gameName} game is ended.`);
+};
+
 exports.joinGame = (io, socket) => {
   return async (gameId) => {
     try {
@@ -91,26 +107,23 @@ exports.startGame = (io, socket) => {
       if (!socket.game) {
         socket.emit(
           "error",
-          new SocketError("Please join a game first.", StatusCodes.BAD_REQUEST)
+          new SocketError(
+            "Please join the game first.",
+            StatusCodes.BAD_REQUEST
+          )
         );
         return;
       }
 
       // start the game.
-      socket.game.startedAt = moment(Date.now());
-      await socket.game.save();
-      io.in(socket.gameName).emit("gameStarted");
-      console.log(
-        `${socket.user.role} ${socket.user.name} start the game: ${socket.gameName}`
-      );
+      await startSocketGame(io, socket);
 
+      // handle the game logic and get the winners when game finished
       const winners = await gameUtils.handleGame(io, socket);
 
+      io.in(socket.gameName).emit("winners", winners);
       // end the game
-      io.in(socket.gameName).emit("gameEnded", winners);
-      console.log(`${socket.gameName} game is ended.`);
-      socket.game.endedAt = moment(Date.now());
-      await socket.game.save();
+      await endSocketGame(io, socket);
     } catch (error) {
       console.log(error);
       socket.emit(
