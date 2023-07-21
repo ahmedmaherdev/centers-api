@@ -31,31 +31,44 @@ const getMatchResult = (studentSocket1, studentSocket2, winnerAnswer) => {
   return undefined;
 };
 
-const filterStudents = async (io, socket, allGameSockets, round) => {
-  // filter the winners and losers
-  const gameMatches = await db.GameMatches.findAll({
+const getGameMatchesForRound = async (socket, round) => {
+  return await db.GameMatches.findAll({
     where: {
       gameId: socket.game.id,
       round,
     },
   });
+};
+
+const getWinnerAnswerForMatch = async (match) => {
+  return await db.GameAnswers.findOne({
+    where: {
+      gameMatchId: match.id,
+    },
+
+    order: [["points", "DESC"]],
+    limit: 1,
+  });
+};
+
+const findStudentSocketById = (allGameSockets, studentId) => {
+  return allGameSockets.find((sock) => sock.user.id === studentId);
+};
+
+const filterStudents = async (io, socket, allGameSockets, round) => {
+  // filter the winners and losers
+  const gameMatches = await getGameMatchesForRound(socket, round);
 
   for (let match of gameMatches) {
-    console;
-    const winnerAnswer = await db.GameAnswers.findOne({
-      where: {
-        gameMatchId: match.id,
-      },
+    const winnerAnswer = await getWinnerAnswerForMatch(match);
 
-      order: [["points", "DESC"]],
-      limit: 1,
-    });
-
-    const studentSocket1 = allGameSockets.find(
-      (sock) => sock.user.id === match.student1Id
+    const studentSocket1 = findStudentSocketById(
+      allGameSockets,
+      match.student1Id
     );
-    const studentSocket2 = allGameSockets.find(
-      (sock) => sock.user.id === match.student2Id
+    const studentSocket2 = findStudentSocketById(
+      allGameSockets,
+      match.student2Id
     );
 
     // 2 students do not answer
@@ -98,6 +111,59 @@ const filterStudents = async (io, socket, allGameSockets, round) => {
   }
 };
 
+const getAllStudentSockets = async (io, socket) => {
+  let allGameSockets = await io.in(socket.gameName).fetchSockets();
+  return allGameSockets.filter((sock) => sock.user.role === "student");
+};
+
+const getAllGameQuestions = async (socket) => {
+  return await db.GameQuestions.findAll({
+    where: { gameId: socket.game.id },
+    sort: ["id"],
+    raw: true,
+  });
+};
+
+const getMatchDetails = async (matchId) => {
+  return await db.GameMatches.findByPk(matchId, {
+    include: [
+      {
+        as: "student1",
+        model: db.Users,
+        attributes: ["id", "name", "photo", "role"],
+      },
+      {
+        as: "student2",
+        model: db.Users,
+        attributes: ["id", "name", "photo", "role"],
+      },
+      {
+        as: "question",
+        model: db.GameQuestions,
+      },
+    ],
+  });
+};
+
+const getGameStudents = async (gameId) => {
+  return await db.GameStudents.findAll({
+    where: { gameId },
+    sort: ["id"],
+    raw: true,
+  });
+};
+
+const sendQuestionToStudents = async (
+  io,
+  studentSocket1,
+  studentSocket2,
+  matchId
+) => {
+  const match = await getMatchDetails(matchId);
+  io.to(studentSocket1.id).emit("newMatch", match);
+  io.to(studentSocket2.id).emit("newMatch", match);
+};
+
 const handleQuestions = async (
   io,
   socket,
@@ -105,11 +171,7 @@ const handleQuestions = async (
   allGameSockets,
   gameQuestions
 ) => {
-  let gameStudents = await db.GameStudents.findAll({
-    where: { gameId: socket.game.id },
-    sort: ["id"],
-    raw: true,
-  });
+  let gameStudents = await getGameStudents(socket.game.id);
 
   // randomize the questions and students order
   gameStudents = randomizeArray(gameStudents);
@@ -117,11 +179,13 @@ const handleQuestions = async (
   for (let i = 0; i < gameStudents.length - 1; i += 2) {
     const randomIndex = getRandomNumberLessThan(gameQuestions.length);
     const selectedQuestion = gameQuestions[randomIndex];
-    const studentSocket1 = allGameSockets.find(
-      (sock) => sock.user.id === gameStudents[i].studentId
+    const studentSocket1 = findStudentSocketById(
+      allGameSockets,
+      gameStudents[i].studentId
     );
-    const studentSocket2 = allGameSockets.find(
-      (sock) => sock.user.id === gameStudents[i + 1].studentId
+    const studentSocket2 = findStudentSocketById(
+      allGameSockets,
+      gameStudents[i + 1].studentId
     );
 
     let match = await db.GameMatches.create({
@@ -132,27 +196,7 @@ const handleQuestions = async (
       round,
     });
 
-    match = await db.GameMatches.findByPk(match.id, {
-      include: [
-        {
-          as: "student1",
-          model: db.Users,
-          attributes: ["id", "name", "photo", "role"],
-        },
-        {
-          as: "student2",
-          model: db.Users,
-          attributes: ["id", "name", "photo", "role"],
-        },
-        {
-          as: "question",
-          model: db.GameQuestions,
-        },
-      ],
-    });
-
-    io.to(studentSocket1.id).emit("newMatch", match);
-    io.to(studentSocket2.id).emit("newMatch", match);
+    await sendQuestionToStudents(io, studentSocket1, studentSocket2, match.id);
   }
 };
 
@@ -160,16 +204,9 @@ const handleGame = async (io, socket) => {
   let round = 1;
 
   // get all students on sockets
-  let allGameSockets = await io.in(socket.gameName).fetchSockets();
-  allGameSockets = allGameSockets.filter(
-    (sock) => sock.user.role === "student"
-  );
+  let allGameSockets = await getAllStudentSockets(io, socket);
 
-  let gameQuestions = await db.GameQuestions.findAll({
-    where: { gameId: socket.game.id },
-    sort: ["id"],
-    raw: true,
-  });
+  let gameQuestions = await getAllGameQuestions(socket);
 
   while (allGameSockets.length > 2) {
     // start the round
@@ -192,10 +229,7 @@ const handleGame = async (io, socket) => {
     round++;
 
     // get all students on sockets
-    allGameSockets = await io.in(socket.gameName).fetchSockets();
-    allGameSockets = allGameSockets.filter(
-      (sock) => sock.user.role === "student"
-    );
+    allGameSockets = await getAllStudentSockets(io, socket);
   }
 
   return allGameSockets.map((sock) => {
