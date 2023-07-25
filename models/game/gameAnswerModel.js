@@ -34,6 +34,7 @@ module.exports = (db) => {
 
   GameAnswer.belongsTo(db.GameMatches, {
     as: "match",
+    onDelete: "CASCADE",
     foreignKey: {
       name: "gameMatchId",
       allowNull: false,
@@ -42,6 +43,7 @@ module.exports = (db) => {
 
   GameAnswer.belongsTo(db.Games, {
     as: "game",
+    onDelete: "CASCADE",
     foreignKey: {
       name: "gameId",
       allowNull: false,

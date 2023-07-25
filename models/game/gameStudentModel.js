@@ -1,5 +1,3 @@
-const { DataTypes } = require("sequelize");
-
 module.exports = (db) => {
   const calcGameStudents = async (gameStudent, GameStudent) => {
     const studentsCount = await GameStudent.count({
@@ -47,8 +45,9 @@ module.exports = (db) => {
     },
   });
 
-  GameStudent.belongsTo(db.Departments, {
+  GameStudent.belongsTo(db.Games, {
     as: "game",
+    onDelete: "CASCADE",
     foreignKey: {
       name: "gameId",
       allowNull: false,
