@@ -1,9 +1,5 @@
 # Centers API
 
-![License](https://img.shields.io/github/license/ahmed-maher-2000/centers-API)
-![GitHub stars](https://img.shields.io/github/stars/ahmed-maher-2000/centers-API?style=social)
-![GitHub forks](https://img.shields.io/github/forks/ahmed-maher-2000/centers-API?style=social)
-
 Centers API is an Express.js API project that utilizes a MySQL database. It provides various features to manage student information, exams, grades, attendances, and more.
 
 ## Technologies Used
