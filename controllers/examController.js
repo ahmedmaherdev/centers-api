@@ -49,12 +49,6 @@ exports.createExamNotification = async (req, res, next) => {
   try {
     // notification here
     const { id, name, departmentId } = req.createdData;
-    const type = "exam";
-    const examNotification = new Notification([], {
-      type,
-      id,
-      name,
-    });
 
     // find all students that department belongs to department of exam
     let studentsDeviceTokens = await db.UserDeviceTokens.findAll({
@@ -73,8 +67,16 @@ exports.createExamNotification = async (req, res, next) => {
     studentsDeviceTokens = studentsDeviceTokens.map((stud) => stud.deviceToken);
 
     if (studentsDeviceTokens.length > 0) {
-      examNotification.deviceTokens = studentsDeviceTokens;
-      examNotification.body = `The ${name} exam is created.`;
+      const type = "exam";
+      const examNotification = new Notification(studentsDeviceTokens, {
+        type,
+        id,
+        name,
+      });
+
+      examNotification.setTitle("امتحان");
+      examNotification.setBody(`يتم إنشاء امتحان جديد`);
+
       const res = await examNotification.send();
       examLogger.info(req.ip, `exam notification sent: ${JSON.stringify(res)}`);
     }

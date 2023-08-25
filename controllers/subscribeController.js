@@ -50,6 +50,7 @@ exports.createSubscribeNotification = async (req, res, next) => {
       where: { userId: studentId },
       attributes: ["deviceToken"],
     });
+
     userDeviceTokens = userDeviceTokens.map((obj) => obj.deviceToken);
     if (userDeviceTokens.length > 0) {
       const subscribeNotification = new Notification(userDeviceTokens, {
@@ -59,9 +60,13 @@ exports.createSubscribeNotification = async (req, res, next) => {
         subscribedTill,
       });
 
-      subscribeNotification.body = `You have been successfully subscribed until ${moment(
-        subscribedTill
-      ).format("DD-MM-YYYY")}.`;
+      subscribeNotification.setTitle("الاشتراك");
+      subscribeNotification.setBody(
+        `${moment(subscribedTill).format(
+          "DD-MM-YYYY"
+        )} لقد تم اشتراكك بنجاح حتى`
+      );
+
       const res = await subscribeNotification.send();
       subscribeLogger.info(
         req.ip,

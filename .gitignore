@@ -4,3 +4,4 @@ node_modules
 localScript.js
 data
 .vscode
+test

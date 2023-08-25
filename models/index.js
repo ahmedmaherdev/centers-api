@@ -3,13 +3,15 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 
-const connectionString =
-  process.env.NODE_ENV === "production"
-    ? process.env.DATABASE
-    : process.env.DATABASE_LOCAL;
+// const connectionString =
+//   process.env.NODE_ENV === "production"
+//     ? process.env.DATABASE
+//     : process.env.DATABASE_LOCAL;
 
-const db = new Sequelize(connectionString, {
+const dbOptions = {
   dialect: "mysql",
+  charset: "utf8mb4",
+  collate: "utf8mb4_unicode_ci",
   pool: {
     max: 5,
     min: 0,
@@ -17,7 +19,20 @@ const db = new Sequelize(connectionString, {
     idle: 10000,
   },
   logging: false,
-});
+};
+
+const db =
+  process.env.NODE_ENV === "production"
+    ? new Sequelize(
+        process.env.DATABASE_NAME,
+        process.env.DATABASE_USER,
+        process.env.DATABASE_PASSWORD,
+        {
+          host: process.env.DATABASE_HOST,
+          ...dbOptions,
+        }
+      )
+    : new Sequelize(process.env.DATABASE, dbOptions);
 
 db.SchoolYears = require("./schoolYearModel")(db);
 db.Departments = require("./departmentModel")(db);
