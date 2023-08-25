@@ -1,6 +1,5 @@
 const admin = require("firebase-admin");
 const serviceAccount = require("../config/serviceAccount.json");
-const translate = require("./translate");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -10,18 +9,22 @@ class Notification {
   constructor(deviceTokens, data) {
     this.deviceTokens = deviceTokens;
     this.data = data;
-    this.title = `New ${this.data.type}`;
-    this.body = `You have a new ${this.data.type}`;
+  }
+
+  setTitle(title) {
+    this.title = title;
+  }
+
+  setBody(body) {
+    this.body = body;
   }
 
   async send() {
     try {
-      const title = await translate(this.title);
-      const body = await translate(this.body);
       const message = {
         notification: {
-          title,
-          body,
+          title: this.title,
+          body: this.body,
         },
         data: { data: JSON.stringify(this.data) },
         tokens: this.deviceTokens,

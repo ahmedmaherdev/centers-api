@@ -32,13 +32,6 @@ exports.createNoteNotification = async (req, res, next) => {
   try {
     // notification here
     const { id, name, url, schoolYearId } = req.createdData;
-    const type = "note";
-    const noteNotification = new Notification([], {
-      type,
-      id,
-      name,
-      url,
-    });
 
     let studentsDeviceTokens = await db.UserDeviceTokens.findAll({
       include: {
@@ -55,7 +48,17 @@ exports.createNoteNotification = async (req, res, next) => {
 
     studentsDeviceTokens = studentsDeviceTokens.map((stud) => stud.deviceToken);
     if (studentsDeviceTokens.length > 0) {
-      noteNotification.deviceTokens = studentsDeviceTokens;
+      const type = "note";
+      const noteNotification = new Notification(studentsDeviceTokens, {
+        type,
+        id,
+        name,
+        url,
+      });
+
+      noteNotification.setTitle("مجلد");
+      noteNotification.setBody(`انت لديك مجلد مهم`);
+
       const res = await noteNotification.send();
       noteLogger.info(req.ip, `note notification sent: ${JSON.stringify(res)}`);
     }

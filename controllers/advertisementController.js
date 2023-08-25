@@ -43,11 +43,6 @@ exports.createAdvertisementNotification = async (req, res, next) => {
     const { id, departmentId, pirority } = req.createdData;
     // do not send notification if pirority is not important
     if (pirority !== "important") return next();
-    const type = "advertisement";
-    const advertisementNotification = new Notification([], {
-      type,
-      id,
-    });
 
     // find all students that department belongs to schoolYear of advertisement
     let studentsDeviceTokens = await db.UserDeviceTokens.findAll({
@@ -65,7 +60,15 @@ exports.createAdvertisementNotification = async (req, res, next) => {
 
     studentsDeviceTokens = studentsDeviceTokens.map((stud) => stud.deviceToken);
     if (studentsDeviceTokens.length > 0) {
-      advertisementNotification.deviceTokens = studentsDeviceTokens;
+      const type = "advertisement";
+      const advertisementNotification = new Notification(studentsDeviceTokens, {
+        type,
+        id,
+      });
+
+      advertisementNotification.setTitle("اعلان");
+      advertisementNotification.setBody(`انت لديك اعلان مهم`);
+
       const res = await advertisementNotification.send();
       advertisementLogger.info(
         req.ip,

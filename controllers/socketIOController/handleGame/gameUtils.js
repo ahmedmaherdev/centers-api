@@ -1,22 +1,6 @@
-const db = require("../../models");
-
-const sleep = (ms) => {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
-};
-
-const getRandomNumberLessThan = (num) => {
-  return Math.floor(Math.random() * num);
-};
-
-const randomizeArray = (arr) => {
-  for (let i = arr.length - 1; i > 0; i--) {
-    const randIndex = getRandomNumberLessThan(i + 1);
-    [arr[i], arr[randIndex]] = [arr[randIndex], arr[i]];
-  }
-  return arr;
-};
+const db = require("../../../models");
+const getRandomNumberLessThan = require("../../../utils/getRandomNumberLessThan");
+const randomizeArray = require("../../../utils/randomizeArray");
 
 const getMatchResult = (studentSocket1, studentSocket2, winnerAnswer) => {
   if (!winnerAnswer) return undefined;
@@ -164,6 +148,12 @@ const sendQuestionToStudents = async (
   io.to(studentSocket2.id).emit("newMatch", match);
 };
 
+const getWinners = (allGameSockets) => {
+  return allGameSockets.map((sock) => {
+    if (sock.user.role === "student") return sock.user;
+  });
+};
+
 const handleQuestions = async (
   io,
   socket,
@@ -200,46 +190,10 @@ const handleQuestions = async (
   }
 };
 
-const handleGame = async (io, socket) => {
-  let round = 1;
-
-  // get all students on sockets
-  let allGameSockets = await getAllStudentSockets(io, socket);
-
-  let gameQuestions = await getAllGameQuestions(socket);
-
-  while (allGameSockets.length > 2) {
-    // start the round
-    io.in(socket.gameName).emit("roundStarted", round);
-    console.log(`game round: ${round} is started.`);
-
-    // start sending questions
-    await handleQuestions(io, socket, round, allGameSockets, gameQuestions);
-
-    // block the code for game question period
-    await sleep(socket.game.period * 1000);
-    console.log(`Stop for ${socket.game.period} seconds.`);
-
-    // filter students
-    await filterStudents(io, socket, allGameSockets, round);
-
-    // round finished
-    io.in(socket.gameName).emit("roundEnded", round);
-    console.log(`game round: ${round} is ended.`);
-    round++;
-
-    // get all students on sockets
-    allGameSockets = await getAllStudentSockets(io, socket);
-  }
-
-  return allGameSockets.map((sock) => {
-    if (sock.user.role === "student") return sock.user;
-  });
-};
-
 module.exports = {
-  sleep,
-  getRandomNumberLessThan,
-  randomizeArray,
-  handleGame,
+  getAllStudentSockets,
+  getAllGameQuestions,
+  handleQuestions,
+  filterStudents,
+  getWinners,
 };
