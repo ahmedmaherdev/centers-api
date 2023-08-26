@@ -4,7 +4,7 @@ const sectionValidator = require("../validators/sectionValidator");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const { StatusCodes } = require("http-status-codes");
-const Sender = require("../utils/Sender");
+const Sender = require("../services/Sender");
 const { Op, literal } = require("sequelize");
 
 exports.getAllSectionsMiddleware = async (req, res, next) => {

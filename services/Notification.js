@@ -5,7 +5,7 @@ admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
 });
 
-class Notification {
+module.exports = class Notification {
   constructor(deviceTokens, data) {
     this.deviceTokens = deviceTokens;
     this.data = data;
@@ -34,9 +34,7 @@ class Notification {
       console.log(error);
     }
   }
-}
-
-module.exports = Notification;
+};
 
 // notification
 // - renew subscribe  - done

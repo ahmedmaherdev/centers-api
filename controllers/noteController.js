@@ -3,8 +3,8 @@ const factoryHandler = require("./factoryHandler");
 const AppError = require("../utils/appError");
 const { StatusCodes } = require("http-status-codes");
 const noteValidator = require("../validators/noteValidator");
-const Notification = require("../utils/notification");
-const Logger = require("../utils/Logger");
+const Notification = require("../services/Notification");
+const Logger = require("../services/Logger");
 const noteLogger = new Logger("note");
 
 exports.getAllNotes = factoryHandler.getAll(db.Notes, noteLogger);

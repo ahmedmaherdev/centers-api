@@ -7,7 +7,7 @@ const userValidator = require("../validators/userValidator");
 const stringToNumber = require("../utils/stringToNumber");
 const catchAsync = require("../utils/catchAsync");
 const config = require("../config");
-const Sender = require("../utils/Sender");
+const Sender = require("../services/Sender");
 
 exports.getAllUsersMiddleware = (req, res, next) => {
   const { role: userRole } = req.user;

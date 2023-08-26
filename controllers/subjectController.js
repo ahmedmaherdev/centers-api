@@ -4,7 +4,7 @@ const subjectValidator = require("../validators/subjectValidator");
 const catchAsync = require("../utils/catchAsync");
 const AppError = require("../utils/appError");
 const { StatusCodes } = require("http-status-codes");
-const Sender = require("../utils/Sender");
+const Sender = require("../services/Sender");
 const { Op, literal } = require("sequelize");
 
 exports.getAllSubjectsMiddleware = async (req, res, next) => {
