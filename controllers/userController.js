@@ -87,6 +87,15 @@ exports.searchUserMiddleware = (req, res, next) => {
       attributes: {
         include: ["email", "phone", "isSuspended"],
       },
+
+      // show student code for the admin.
+      include: {
+        model: db.Students,
+        as: "student",
+        attributes: {
+          include: ["code"],
+        },
+      },
     };
   }
 
