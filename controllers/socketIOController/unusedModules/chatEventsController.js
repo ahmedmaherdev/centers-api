@@ -1,6 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const SocketError = require("./socketError");
-const db = require("../../models");
+const db = require("../../../models");
 
 exports.sendMessage = (io, socket) => {
   return async (content) => {

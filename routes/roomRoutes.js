@@ -1,4 +1,4 @@
-const protect = require("../controllers/authController/protect");
+const protect = require("../middlewares/protectMiddleware");
 const restrictTo = require("../utils/restrictTo");
 const express = require("express");
 const router = express.Router();

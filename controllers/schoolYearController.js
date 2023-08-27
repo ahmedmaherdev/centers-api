@@ -3,7 +3,7 @@ const factoryHandler = require("./factoryHandler");
 const schoolYearValidator = require("../validators/schoolYearValidator");
 const Logger = require("../services/Logger");
 const { StatusCodes } = require("http-status-codes");
-const AppError = require("../utils/appError");
+const AppError = require("../errors/AppError");
 const schoolYearLogger = new Logger("schoolYear");
 exports.getAllSchoolYears = factoryHandler.getAll(
   db.SchoolYears,

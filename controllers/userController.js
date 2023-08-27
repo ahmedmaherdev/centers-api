@@ -1,7 +1,7 @@
 const db = require("../models");
 const factoryHandler = require("./factoryHandler");
 const cloudinary = require("../utils/cloudinary");
-const AppError = require("../utils/appError");
+const AppError = require("../errors/AppError");
 const { StatusCodes } = require("http-status-codes");
 const userValidator = require("../validators/userValidator");
 const stringToNumber = require("../utils/stringToNumber");

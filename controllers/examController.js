@@ -1,7 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const db = require("../models");
 const factoryHandler = require("./factoryHandler");
-const AppError = require("../utils/appError");
+const AppError = require("../errors/AppError");
 const { Op, literal } = require("sequelize");
 const examValidator = require("../validators/examValidator");
 const validate = require("../utils/validate");

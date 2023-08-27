@@ -1,5 +1,5 @@
 const { StatusCodes } = require("http-status-codes");
-const SocketError = require("./socketError");
+const SocketError = require("../../errors/SocketError");
 const db = require("../../models");
 const moment = require("moment");
 const handleGame = require("./handleGame");

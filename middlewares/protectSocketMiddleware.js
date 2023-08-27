@@ -1,8 +1,8 @@
-const SocketError = require("./socketError");
+const SocketError = require("../errors/SocketError");
 const { StatusCodes } = require("http-status-codes");
 const jwt = require("jsonwebtoken");
 const { promisify } = require("util");
-const db = require("../../models");
+const db = require("../models");
 
 module.exports = (io) => {
   return async (socket, next) => {

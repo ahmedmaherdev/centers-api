@@ -3,7 +3,7 @@ const db = require("../models");
 const factoryHandler = require("./factoryHandler");
 const catchAsync = require("../utils/catchAsync");
 const Sender = require("../services/Sender");
-const AppError = require("../utils/appError");
+const AppError = require("../errors/AppError");
 
 exports.getStudentRoom = catchAsync(async (req, res, next) => {
   const userId = req.user.id;

@@ -3,7 +3,7 @@ const router = express.Router({ mergeParams: true });
 const answers = require("../../controllers/answerController");
 const { checkExamMiddleware } = require("../../controllers/examController");
 const restrictTo = require("../../utils/restrictTo");
-const protect = require("../../controllers/authController/protect");
+const protect = require("../../middlewares/protectMiddleware");
 
 router.use(protect);
 router.use(checkExamMiddleware);

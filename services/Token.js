@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
 
-const daysToMS = require("../../utils/daysToMS");
+const daysToMS = require("../utils/daysToMS");
 
 class Token {
   sign(payload, expiresIn = process.env.JWT_EXPIRES_IN) {

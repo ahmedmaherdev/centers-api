@@ -8,7 +8,12 @@ const io = new Server(server, {
   cors: "*",
 });
 const db = require("./models");
-const socketIOController = require("./controllers/socketIOController")(io);
+const onConnection = require("./controllers/socketIOController/onConnection")(
+  io
+);
+const protectSocketMiddlware = require("./middlewares/protectSocketMiddleware")(
+  io
+);
 
 dotenv.config();
 
@@ -25,8 +30,8 @@ db.sync({})
 cloudinaryConfig();
 
 // io
-io.use(socketIOController.protect);
-io.on("connection", socketIOController.connection);
+io.use(protectSocketMiddlware);
+io.on("connection", onConnection);
 
 const PORT = process.env.PORT ?? 3000;
 server.listen(PORT, () => console.log(`Server is listening on port: ${PORT}`));

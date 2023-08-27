@@ -1,7 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const db = require("../models");
 const { Op, literal } = require("sequelize");
-const AppError = require("../utils/appError");
+const AppError = require("../errors/AppError");
 const catchAsync = require("../utils/catchAsync");
 const factoryHandler = require("./factoryHandler");
 const jwt = require("jsonwebtoken");
