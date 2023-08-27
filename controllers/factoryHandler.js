@@ -2,7 +2,7 @@ const catchAsync = require("../utils/catchAsync");
 const appFeatures = require("../utils/appFeatures");
 const AppError = require("../utils/appError");
 const { StatusCodes } = require("http-status-codes");
-const Sender = require("../utils/Sender");
+const Sender = require("../services/Sender");
 const { literal } = require("sequelize");
 
 exports.getAll = (Model, Logger) =>

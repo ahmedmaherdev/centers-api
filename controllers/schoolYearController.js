@@ -1,7 +1,7 @@
 const db = require("../models");
 const factoryHandler = require("./factoryHandler");
 const schoolYearValidator = require("../validators/schoolYearValidator");
-const Logger = require("../utils/Logger");
+const Logger = require("../services/Logger");
 const { StatusCodes } = require("http-status-codes");
 const AppError = require("../utils/appError");
 const schoolYearLogger = new Logger("schoolYear");

@@ -2,7 +2,7 @@ const { StatusCodes } = require("http-status-codes");
 const db = require("../models");
 const factoryHandler = require("./factoryHandler");
 const catchAsync = require("../utils/catchAsync");
-const Sender = require("../utils/Sender");
+const Sender = require("../services/Sender");
 const AppError = require("../utils/appError");
 
 exports.getStudentRoom = catchAsync(async (req, res, next) => {

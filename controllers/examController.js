@@ -6,8 +6,8 @@ const { Op, literal } = require("sequelize");
 const examValidator = require("../validators/examValidator");
 const validate = require("../utils/validate");
 const catchAsync = require("../utils/catchAsync");
-const Notification = require("../utils/notification");
-const Logger = require("../utils/Logger");
+const Notification = require("../services/Notification");
+const Logger = require("../services/Logger");
 const examLogger = new Logger("exam");
 
 exports.getAllExamsMiddleware = (req, res, next) => {

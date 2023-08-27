@@ -1,5 +1,5 @@
 const catchAsync = require("../utils/catchAsync");
-const Sender = require("../utils/Sender");
+const Sender = require("../services/Sender");
 const { StatusCodes } = require("http-status-codes");
 const cloudinary = require("../utils/cloudinary");
 

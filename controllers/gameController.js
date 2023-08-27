@@ -6,9 +6,9 @@ const gameValidator = require("../validators/gameValidator");
 const gameQuestionsValidator = require("../validators/gameQuestionValidator");
 const validate = require("../utils/validate");
 const catchAsync = require("../utils/catchAsync");
-const Logger = require("../utils/Logger");
+const Logger = require("../services/Logger");
 const { fn, col } = require("sequelize");
-const Sender = require("../utils/Sender");
+const Sender = require("../services/Sender");
 const gameLogger = new Logger("game");
 
 exports.getBestTenStudents = catchAsync(async (req, res, next) => {

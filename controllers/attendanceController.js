@@ -6,7 +6,7 @@ const catchAsync = require("../utils/catchAsync");
 const factoryHandler = require("./factoryHandler");
 const jwt = require("jsonwebtoken");
 const { promisify } = require("util");
-const Sender = require("../utils/Sender");
+const Sender = require("../services/Sender");
 const moment = require("moment");
 
 exports.getAllAttendancesMiddleware = (req, res, next) => {

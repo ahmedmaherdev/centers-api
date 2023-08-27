@@ -43,7 +43,6 @@ module.exports = (db) => {
         type: DataTypes.INTEGER,
         defaultValue: config.maxAllowedAbsence,
       },
-      lastAbsence: DataTypes.DATEONLY,
 
       allExams: {
         type: DataTypes.INTEGER,

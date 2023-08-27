@@ -3,11 +3,11 @@ const db = require("../models");
 const AppError = require("../utils/appError");
 const catchAsync = require("../utils/catchAsync");
 const factoryHandler = require("./factoryHandler");
-const Sender = require("../utils/Sender");
+const Sender = require("../services/Sender");
 const validate = require("../utils/validate");
 const questionValidator = require("../validators/gameQuestionValidator");
 const moment = require("moment");
-const Logger = require("../utils/Logger");
+const Logger = require("../services/Logger");
 const gameLogger = new Logger("game");
 
 exports.getAllGameQuestions = catchAsync(async (req, res, next) => {

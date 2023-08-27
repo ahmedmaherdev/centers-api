@@ -2,15 +2,15 @@ const catchAsync = require("../../utils/catchAsync");
 const AppError = require("../../utils/appError");
 const Token = require("./Token");
 const { StatusCodes } = require("http-status-codes");
-const Sender = require("../../utils/Sender");
-const Email = require("../../utils/email");
+const Sender = require("../../services/Sender");
+const Email = require("../../services/Email");
 const crypto = require("crypto");
 const db = require("../../models");
 const { Op } = require("sequelize");
 const stringToNumber = require("../../utils/stringToNumber");
 const authValidator = require("../../validators/authValidator");
 const validate = require("../../utils/validate");
-const Logger = require("../../utils/Logger");
+const Logger = require("../../services/Logger");
 const authLogger = new Logger("auth");
 
 exports.loginAsParent = catchAsync(async (req, res, next) => {

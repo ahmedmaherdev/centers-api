@@ -3,8 +3,8 @@ const factoryHandler = require("./factoryHandler");
 const AppError = require("../utils/appError");
 const { StatusCodes } = require("http-status-codes");
 const advertisementValidator = require("../validators/advertisementValidator");
-const Notification = require("../utils/notification");
-const Logger = require("../utils/Logger");
+const Notification = require("../services/Notification");
+const Logger = require("../services/Logger");
 const advertisementLogger = new Logger("advertisement");
 
 exports.getAllAdvertisements = factoryHandler.getAll(

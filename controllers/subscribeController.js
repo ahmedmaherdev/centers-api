@@ -1,7 +1,7 @@
 const db = require("../models");
 const factoryHandler = require("./factoryHandler");
-const Notification = require("../utils/notification");
-const Logger = require("../utils/Logger");
+const Notification = require("../services/Notification");
+const Logger = require("../services/Logger");
 const subscribeLogger = new Logger("subscribe");
 const moment = require("moment");
 const subscribeValidator = require("../validators/subscribeValidator");
