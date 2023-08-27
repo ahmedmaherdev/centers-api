@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const schoolYears = require("../controllers/schoolYearController");
 const restrictTo = require("../utils/restrictTo");
-const protect = require("../controllers/authController/protect");
+const protect = require("../middlewares/protectMiddleware");
 
 router.get("/", schoolYears.getAllSchoolYears);
 router.get("/:id", schoolYears.getSchoolYear);

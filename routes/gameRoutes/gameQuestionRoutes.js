@@ -3,7 +3,7 @@ const router = express.Router({ mergeParams: true });
 const questions = require("../../controllers/gameQuestionController");
 const { checkGameMiddleware } = require("../../controllers/gameController");
 const restrictTo = require("../../utils/restrictTo");
-const protect = require("../../controllers/authController/protect");
+const protect = require("../../middlewares/protectMiddleware");
 
 router.use(protect);
 router.use(checkGameMiddleware);

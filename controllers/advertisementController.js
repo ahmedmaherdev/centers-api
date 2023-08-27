@@ -1,6 +1,6 @@
 const db = require("../models");
 const factoryHandler = require("./factoryHandler");
-const AppError = require("../utils/appError");
+const AppError = require("../errors/AppError");
 const { StatusCodes } = require("http-status-codes");
 const advertisementValidator = require("../validators/advertisementValidator");
 const Notification = require("../services/Notification");

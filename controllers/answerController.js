@@ -5,7 +5,7 @@ const catchAsync = require("../utils/catchAsync");
 const Sender = require("../services/Sender");
 const validate = require("../utils/validate");
 const answerValidator = require("../validators/answerValidator");
-const AppError = require("../utils/appError");
+const AppError = require("../errors/AppError");
 
 exports.getMyAnswers = catchAsync(async (req, res, next) => {
   const { id: studentId } = req.user;

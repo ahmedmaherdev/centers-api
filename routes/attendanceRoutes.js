@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router({ mergeParams: true });
 const attendances = require("../controllers/attendanceController");
 const restrictTo = require("../utils/restrictTo");
-const protect = require("../controllers/authController/protect");
+const protect = require("../middlewares/protectMiddleware");
 
 router.use(protect);
 router.use(restrictTo("manager", "admin"));

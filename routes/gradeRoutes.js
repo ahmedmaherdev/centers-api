@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const grades = require("../controllers/gradeController");
 const restrictTo = require("../utils/restrictTo");
-const protect = require("../controllers/authController/protect");
+const protect = require("../middlewares/protectMiddleware");
 
 router.use(protect);
 router.get("/", grades.getAllGradesMiddleware, grades.getAllGrades);

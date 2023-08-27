@@ -1,6 +1,6 @@
-const db = require("../../../models");
-const getRandomNumberLessThan = require("../../../utils/getRandomNumberLessThan");
-const randomizeArray = require("../../../utils/randomizeArray");
+const db = require("../models");
+const getRandomNumberLessThan = require("./getRandomNumberLessThan");
+const randomizeArray = require("./randomizeArray");
 
 const getMatchResult = (studentSocket1, studentSocket2, winnerAnswer) => {
   if (!winnerAnswer) return undefined;

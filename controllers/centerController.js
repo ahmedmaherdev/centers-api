@@ -3,7 +3,7 @@ const factoryHandler = require("./factoryHandler");
 const centerValidator = require("../validators/centerValidator");
 const validate = require("../utils/validate");
 const Logger = require("../services/Logger");
-const AppError = require("../utils/appError");
+const AppError = require("../errors/AppError");
 const { StatusCodes } = require("http-status-codes");
 const centerLogger = new Logger("center");
 

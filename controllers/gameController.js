@@ -1,7 +1,7 @@
 const { StatusCodes } = require("http-status-codes");
 const db = require("../models");
 const factoryHandler = require("./factoryHandler");
-const AppError = require("../utils/appError");
+const AppError = require("../errors/AppError");
 const gameValidator = require("../validators/gameValidator");
 const gameQuestionsValidator = require("../validators/gameQuestionValidator");
 const validate = require("../utils/validate");

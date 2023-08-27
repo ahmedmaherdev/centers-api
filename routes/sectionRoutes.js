@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const sections = require("../controllers/sectionController");
 const restrictTo = require("../utils/restrictTo");
-const protect = require("../controllers/authController/protect");
+const protect = require("../middlewares/protectMiddleware");
 const attendances = require("./attendanceRoutes");
 
 router.use(protect);

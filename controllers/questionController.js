@@ -1,6 +1,6 @@
 const { StatusCodes } = require("http-status-codes");
 const db = require("../models");
-const AppError = require("../utils/appError");
+const AppError = require("../errors/AppError");
 const catchAsync = require("../utils/catchAsync");
 const factoryHandler = require("./factoryHandler");
 const Sender = require("../services/Sender");

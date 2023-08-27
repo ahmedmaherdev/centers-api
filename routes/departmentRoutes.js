@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const departments = require("../controllers/departmentController");
 const restrictTo = require("../utils/restrictTo");
-const protect = require("../controllers/authController/protect");
+const protect = require("../middlewares/protectMiddleware");
 
 router.get("/", departments.getAllDepartments);
 router.get("/:id", departments.getDepartment);

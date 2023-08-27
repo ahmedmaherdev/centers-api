@@ -1,6 +1,6 @@
 const catchAsync = require("../utils/catchAsync");
-const appFeatures = require("../utils/appFeatures");
-const AppError = require("../utils/appError");
+const appFeatures = require("../services/AppFeatures");
+const AppError = require("../errors/AppError");
 const { StatusCodes } = require("http-status-codes");
 const Sender = require("../services/Sender");
 const { literal } = require("sequelize");
