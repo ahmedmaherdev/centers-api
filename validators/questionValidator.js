@@ -1,7 +1,7 @@
 const joi = require("joi");
 
 exports.createQuestion = joi.object({
-  content: joi.string().min(5).max(200).required(),
+  content: joi.string().min(5).required(),
   choices: joi
     .object({
       A: joi.string().required(),
@@ -15,7 +15,7 @@ exports.createQuestion = joi.object({
 });
 
 exports.updateQuestion = joi.object({
-  content: joi.string().min(5).max(200),
+  content: joi.string().min(5),
   choices: joi.object({
     A: joi.string(),
     B: joi.string(),

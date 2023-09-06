@@ -10,6 +10,11 @@ module.exports = (db) => {
       },
     },
     {
+      defaultScope: {
+        attributes: {
+          include: ["id", "name"],
+        },
+      },
       indexes: [
         {
           unique: true,
@@ -27,6 +32,7 @@ module.exports = (db) => {
   department.belongsTo(db.SchoolYears, {
     as: "schoolYear",
     foreignKey: "schoolYearId",
+    allowNull: false,
   });
 
   return department;

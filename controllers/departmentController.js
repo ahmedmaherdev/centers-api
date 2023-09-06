@@ -1,6 +1,8 @@
 const db = require("../models");
 const factoryHandler = require("./factoryHandler");
 const departmentValidator = require("../validators/departmentValidator");
+const AppError = require("../errors/AppError");
+const { StatusCodes } = require("http-status-codes");
 
 exports.getAllDepartments = factoryHandler.getAll(db.Departments);
 
