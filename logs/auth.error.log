@@ -1,0 +1,2 @@
+2023-09-07 17:05:54 | ERROR | ::ffff:127.0.0.1 | POST /api/v1/auth/login | STATUS: 400 | Incorrect email or password.
+2023-09-07 17:06:37 | ERROR | ::ffff:127.0.0.1 | POST /api/v1/auth/login | STATUS: 400 | Incorrect email or password.

@@ -1,1 +1,4 @@
 2023-06-18 19:01:07 | INFO | ::ffff:127.0.0.1 | POST /api/v1/auth/login | admin administrator login.
+2023-09-07 17:05:54 | ERROR | ::ffff:127.0.0.1 | POST /api/v1/auth/login | STATUS: 400 | Incorrect email or password.
+2023-09-07 17:06:37 | ERROR | ::ffff:127.0.0.1 | POST /api/v1/auth/login | STATUS: 400 | Incorrect email or password.
+2023-09-07 17:06:49 | INFO | ::ffff:127.0.0.1 | POST /api/v1/auth/login | admin administrator login.
