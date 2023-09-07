@@ -1,5 +1,6 @@
 const AppError = require("../errors/AppError");
 const { StatusCodes } = require("http-status-codes");
+const translate = require("../utils/translate");
 
 const handleLenError = (err) => {
   const message = `Invalid input data: ${err.errors[0].path} must be more than ${err.errors[0].validatorArgs[0]} characters and less than ${err.errors[0].validatorArgs[1]} characters.`;
@@ -50,14 +51,14 @@ const sendErrorDev = (err, req, res) => {
   });
 };
 
-const sendErrorProd = (err, req, res) => {
+const sendErrorProd = async (err, req, res) => {
   // API
   if (req.originalUrl.startsWith("/api")) {
     // Operational, trusted error: send message to the client
     if (err.isOperational) {
       return res.status(err.statusCode).json({
         status: err.status,
-        message: err.message,
+        message: await translate(err.message),
       });
       // Programming or other unknown error: don't leak error details
     }
@@ -68,7 +69,7 @@ const sendErrorProd = (err, req, res) => {
     // 2) Send generic message
     return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       status: "error",
-      message: "Something went very wrong!",
+      message: "حدث خطا بالرجاء المحاولة في وقت اخر",
     });
   }
 };
