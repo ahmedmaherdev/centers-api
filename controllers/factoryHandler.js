@@ -88,7 +88,7 @@ exports.getOne = (Model, Logger) =>
 
 exports.createOne = (Model, Logger) =>
   catchAsync(async (req, res, next) => {
-    const data = await Model.create(req.body);
+    let data = await Model.create(req.body);
     const modelName = Model.name.toLowerCase();
 
     // Logging data
@@ -98,6 +98,8 @@ exports.createOne = (Model, Logger) =>
       } create one ${modelName} with data: ${JSON.stringify(data)}.`;
       Logger.info(req.ip, logMsg);
     }
+
+    data = await Model.findByPk(data.id);
     Sender.send(res, StatusCodes.CREATED, {
       [modelName]: data,
     });

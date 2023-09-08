@@ -2,7 +2,7 @@ const { StatusCodes } = require("http-status-codes");
 const SocketError = require("../../errors/SocketError");
 const db = require("../../models");
 const moment = require("moment");
-const handleGame = require("./handleGame");
+const handleSocketGame = require("../../utils/handleSocketGame");
 
 const startSocketGame = async (io, socket) => {
   socket.game.startedAt = moment(Date.now());
@@ -119,7 +119,7 @@ exports.startGame = (io, socket) => {
       await startSocketGame(io, socket);
 
       // handle the game logic and get the winners when game finished
-      await handleGame(io, socket);
+      await handleSocketGame(io, socket);
 
       // end the game
       await endSocketGame(io, socket);

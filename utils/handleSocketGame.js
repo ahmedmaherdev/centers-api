@@ -1,5 +1,5 @@
-const gameUtils = require("../../utils/gameUtils");
-const sleep = require("../../utils/sleep");
+const gameUtils = require("./gameSocketUtils");
+const sleep = require("./sleep");
 
 module.exports = async (io, socket) => {
   let round = 1;
