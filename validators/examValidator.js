@@ -6,7 +6,7 @@ exports.createExam = joi.object({
   period: joi
     .number()
     .min(5 * 60)
-    .max(2 * 60 * 60)
+    .max(3 * 60 * 60)
     .required(), // min 5 mins and max 2 hours
 
   departmentId: joi.number().integer().required(),
@@ -19,7 +19,7 @@ exports.updateExam = joi.object({
   period: joi
     .number()
     .min(5 * 60)
-    .max(2 * 60 * 60), // min 5 mins and max 2 hours
+    .max(3 * 60 * 60), // min 5 mins and max 2 hours
   departmentId: joi.number().integer(),
   photo: joi.string(),
   startedAt: joi.date().min(moment(Date.now())),

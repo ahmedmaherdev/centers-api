@@ -24,6 +24,11 @@ module.exports = (db) => {
       defaultScope: {
         include: [
           {
+            model: db.SchoolYears,
+            as: "schoolYear",
+            attributes: ["id", "name"],
+          },
+          {
             model: db.Departments,
             as: "departments",
             through: {
