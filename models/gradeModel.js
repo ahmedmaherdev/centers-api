@@ -60,10 +60,16 @@ module.exports = (db) => {
                 model: db.Departments,
                 as: "department",
                 attributes: [],
+                include: {
+                  model: db.SchoolYears,
+                  as: "schoolYear",
+                  attributes: [],
+                },
               },
             },
 
             attributes: [[fn("sum", col("correct")), "totalCorrect"]],
+            group: ["correct"],
             raw: true,
           });
 
