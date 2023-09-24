@@ -31,9 +31,6 @@ module.exports = (db) => {
     },
     {
       defaultScope: {
-        attributes: {
-          exclude: ["departmentId"],
-        },
         include: [
           {
             as: "department",
