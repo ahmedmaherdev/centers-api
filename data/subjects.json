@@ -1,0 +1,212 @@
+[
+  {
+    "id": 1,
+    "name": "لغة عربية",
+    "sections": 50,
+    "schoolYearId": 1
+  },
+  {
+    "id": 2,
+    "name": "رياضات",
+    "sections": 50,
+    "schoolYearId": 1
+  },
+  {
+    "id": 3,
+    "name": "فيزياء",
+    "sections": 50,
+    "schoolYearId": 1
+  },
+  {
+    "id": 4,
+    "name": "كيمياء",
+    "sections": 50,
+    "schoolYearId": 1
+  },
+  {
+    "id": 5,
+    "name": "احياء",
+    "sections": 50,
+    "schoolYearId": 1
+  },
+  {
+    "id": 6,
+    "name": "لغة انجليزية",
+    "sections": 50,
+    "schoolYearId": 1
+  },
+  {
+    "id": 7,
+    "name": "لغة تانية",
+    "sections": 50,
+    "schoolYearId": 1
+  },
+  {
+    "id": 8,
+    "name": "جغرافيا",
+    "sections": 50,
+    "schoolYearId": 1
+  },
+  {
+    "id": 9,
+    "name": "فلسفة",
+    "sections": 50,
+    "schoolYearId": 1
+  },
+  {
+    "id": 10,
+    "name": "تاريخ",
+    "sections": 50,
+    "schoolYearId": 1
+  },
+  {
+    "id": 11,
+    "name": "لغة عربية",
+    "sections": 50,
+    "schoolYearId": 2
+  },
+  {
+    "id": 12,
+    "name": "رياضيات",
+    "sections": 50,
+    "schoolYearId": 2
+  },
+  {
+    "id": 13,
+    "name": "لغة انجليزية",
+    "sections": 50,
+    "schoolYearId": 2
+  },
+  {
+    "id": 14,
+    "name": "لغة تانية",
+    "sections": 50,
+    "schoolYearId": 2
+  },
+  {
+    "id": 15,
+    "name": "جغرافيا",
+    "sections": 50,
+    "schoolYearId": 2
+  },
+  {
+    "id": 16,
+    "name": "فلسفة",
+    "sections": 50,
+    "schoolYearId": 2
+  },
+  {
+    "id": 17,
+    "name": "تاريخ",
+    "sections": 50,
+    "schoolYearId": 2
+  },
+  {
+    "id": 18,
+    "name": "علم نفس",
+    "sections": 50,
+    "schoolYearId": 2
+  },
+  {
+    "id": 19,
+    "name": "احياء",
+    "sections": 50,
+    "schoolYearId": 2
+  },
+  {
+    "id": 20,
+    "name": "كيمياء",
+    "sections": 50,
+    "schoolYearId": 2
+  },
+  {
+    "id": 21,
+    "name": "فيزياء",
+    "sections": 50,
+    "schoolYearId": 2
+  },
+  {
+    "id": 22,
+    "name": "ميكانيكا",
+    "sections": 50,
+    "schoolYearId": 2
+  },
+  {
+    "id": 23,
+    "name": "لغة عربية",
+    "sections": 50,
+    "schoolYearId": 3
+  },
+  {
+    "id": 24,
+    "name": "لغة انجليزية",
+    "sections": 50,
+    "schoolYearId": 3
+  },
+  {
+    "id": 25,
+    "name": "لغة تانية",
+    "sections": 50,
+    "schoolYearId": 3
+  },
+  {
+    "id": 26,
+    "name": "جغرافيا",
+    "sections": 50,
+    "schoolYearId": 3
+  },
+  {
+    "id": 27,
+    "name": "فلسفه والمنطق",
+    "sections": 50,
+    "schoolYearId": 3
+  },
+  {
+    "id": 28,
+    "name": "تاريخ",
+    "sections": 50,
+    "schoolYearId": 3
+  },
+  {
+    "id": 29,
+    "name": "علم نفس واجتماع",
+    "sections": 50,
+    "schoolYearId": 3
+  },
+  {
+    "id": 30,
+    "name": "كيمياء",
+    "sections": 50,
+    "schoolYearId": 3
+  },
+  {
+    "id": 31,
+    "name": "فيزياء",
+    "sections": 50,
+    "schoolYearId": 3
+  },
+  {
+    "id": 32,
+    "name": "الرياضه التطبيقيه",
+    "sections": 50,
+    "schoolYearId": 3
+  },
+  {
+    "id": 33,
+    "name": "الرياضه البحته",
+    "sections": 50,
+    "schoolYearId": 3
+  },
+  {
+    "id": 34,
+    "name": "جيولوجيا",
+    "sections": 50,
+    "schoolYearId": 3
+  },
+  {
+    "id": 35,
+    "name": "احياء",
+    "sections": 50,
+    "schoolYearId": 3
+  }
+]

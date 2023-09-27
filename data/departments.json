@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "name": "ادبي / علمي",
+    "schoolYearId": 1
+  },
+  {
+    "id": 2,
+    "name": "ادبي",
+    "schoolYearId": 2
+  },
+  {
+    "id": 3,
+    "name": "علمي",
+    "schoolYearId": 2
+  },
+  {
+    "id": 4,
+    "name": "ادبي",
+    "schoolYearId": 3
+  },
+  {
+    "id": 5,
+    "name": "علمي رياضيات",
+    "schoolYearId": 3
+  },
+  {
+    "id": 6,
+    "name": "علمي علوم",
+    "schoolYearId": 3
+  }
+]

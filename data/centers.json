@@ -1,0 +1,12 @@
+[
+  {
+    "id": 1,
+    "name": "center name",
+    "phone": "01111111111",
+    "location": {
+      "latitude": 22.22,
+      "longitude": 22.22,
+      "description": "cairo"
+    }
+  }
+]
