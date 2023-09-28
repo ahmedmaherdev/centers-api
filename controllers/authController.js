@@ -209,7 +209,7 @@ exports.forgetPassword = catchAsync(async (req, res, next) => {
   await user.save();
 
   try {
-    const URL = `http://${req.hostname}/reset-password?token=${resetToken}`;
+    const URL = `http://${req.hostname}:${process.env.PORT}/reset-password?token=${resetToken}`;
 
     await new Email(user, URL).sendPasswordReset();
     authLogger.info(
