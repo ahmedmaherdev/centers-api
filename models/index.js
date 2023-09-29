@@ -3,11 +3,6 @@ const dotenv = require("dotenv");
 
 dotenv.config();
 
-// const connectionString =
-//   process.env.NODE_ENV === "production"
-//     ? process.env.DATABASE
-//     : process.env.DATABASE_LOCAL;
-
 const dbOptions = {
   dialect: "mysql",
   charset: "utf8mb4",
@@ -58,7 +53,7 @@ db.GameStudents = require("./game/gameStudentModel")(db);
 db.GameQuestions = require("./game/gameQuestionModel")(db);
 db.GameMatches = require("./game/gameMatchModel")(db);
 db.GameAnswers = require("./game/gameAnswerModel")(db);
-db.Rooms = require("./chat/roomModel")(db);
-db.Messages = require("./chat/messageModel")(db);
+// db.Rooms = require("./chat/roomModel")(db);
+// db.Messages = require("./chat/messageModel")(db);
 
 module.exports = db;
