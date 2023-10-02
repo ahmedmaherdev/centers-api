@@ -29,7 +29,7 @@ async function runScript() {
 }
 async function getAllTableNames() {
   const [results, metadata] = await db.query("SHOW TABLES");
-  return results.map((row) => row.Tables_in_centers_db);
+return results.map((row) => row[`Tables_in_${process.env.DATABASE_NAME}`]);
 }
 
 async function resetAutoIncrement() {
