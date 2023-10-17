@@ -1,11 +1,11 @@
 [
   {
     "id": 1,
-    "name": "center name",
+    "name": "Perfect",
     "phone": "01111111111",
     "location": {
-      "latitude": 22.22,
-      "longitude": 22.22,
+      "latitude": 30.126417,
+      "longitude": 31.350667,
       "description": "cairo"
     }
   }

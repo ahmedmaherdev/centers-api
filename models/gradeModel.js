@@ -1,5 +1,45 @@
 const { DataTypes, fn, col } = require("sequelize");
 
+// totalExams, passExams, studentPoints
+const getTotalExamsByStudentId = (Grade, studentId) =>
+  Grade.count({
+    where: {
+      studentId,
+    },
+  });
+
+const getTotalPassExamsByStudentId = (Grade, studentId) =>
+  Grade.count({
+    where: { isPassed: true, studentId },
+  });
+
+const getTotalStudentPoints = (db, studentId) =>
+  db.Grades.findOne({
+    where: {
+      studentId,
+    },
+
+    include: {
+      model: db.Exams,
+      as: "exam",
+      attributes: [],
+      include: {
+        model: db.Departments,
+        as: "department",
+        attributes: [],
+        include: {
+          model: db.SchoolYears,
+          as: "schoolYear",
+          attributes: [],
+        },
+      },
+    },
+
+    attributes: [[fn("sum", col("correct")), "totalCorrect"]],
+    group: ["correct"],
+    raw: true,
+  });
+
 module.exports = (db) => {
   const Grade = db.define(
     "Grade",
@@ -37,41 +77,12 @@ module.exports = (db) => {
 
         afterSave: async function (grade, options) {
           const studentData = await db.Users.findByPk(grade.studentId);
-          const totalExams = await Grade.count({
-            where: {
-              studentId: studentData.id,
-            },
-          });
 
-          const passExams = await Grade.count({
-            where: { isPassed: true, studentId: studentData.id },
-          });
-
-          const studentPoints = await Grade.findOne({
-            where: {
-              studentId: studentData.id,
-            },
-
-            include: {
-              model: db.Exams,
-              as: "exam",
-              attributes: [],
-              include: {
-                model: db.Departments,
-                as: "department",
-                attributes: [],
-                include: {
-                  model: db.SchoolYears,
-                  as: "schoolYear",
-                  attributes: [],
-                },
-              },
-            },
-
-            attributes: [[fn("sum", col("correct")), "totalCorrect"]],
-            group: ["correct"],
-            raw: true,
-          });
+          const [totalExams, passExams, studentPoints] = await Promise.all([
+            getTotalExamsByStudentId(Grade, studentData.id),
+            getTotalPassExamsByStudentId(Grade, studentData.id),
+            getTotalStudentPoints(db, studentData.id),
+          ]);
 
           const points = studentPoints.totalCorrect ?? 0;
           studentData.student.allExams = totalExams;
